@@ -1,0 +1,63 @@
+<section  ng-init="findOne()">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <h3 class="panel-heading">用户信息</h3>
+                <div class="panel-body">
+
+                    <div  class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">ID</label>
+                            <div class="col-md-10"><p class="form-control-static">{{user.id}}</p></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">名称</label>
+                            <div class="col-md-10"><p class="form-control-static">{{user.name}}</p></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">用户名</label>
+                            <div class="col-md-10"><p class="form-control-static">{{user.username}}</p></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">Email</label>
+                            <div class="col-md-10"><p class="form-control-static">{{user.email}}</p></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label" for="mobile">手机号</label>
+                            <div class="col-md-10"><p class="form-control-static">{{user.mobile || '无'}}</p></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">性别 </label>
+                            <div class="col-md-10"><p class="form-control-static">{{user.gender || '无'}}</p></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">角色 </label>
+                            <div class="col-md-10">
+                                <span ng-if="(!user.roles || user.roles.length > 0 )" ng-repeat=" role in user.roles"  class="label label-info">
+                                        {{gGetArrName(role)}}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">创建人 </label>
+                            <div class="col-md-10"><p class="form-control-static">{{user.author ? user.author.username : '无'}}</p></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">注册时间 </label>
+                            <div class="col-md-10"><p class="form-control-static">{{user.created}}</p></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">上次登录时间 </label>
+                            <div class="col-md-10"><p class="form-control-static">{{user.last_login_date}}</p></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">上次登录IP </label>
+                            <div class="col-md-10"><p class="form-control-static">{{user.last_login_ip}}</p></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

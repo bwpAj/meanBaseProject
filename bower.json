@@ -1,0 +1,17 @@
+{
+  "name": "MEAN",
+  "version": "0.0.1",
+  "dependencies": {
+    "angular": "^1.5.5",
+    "zepto": "^1.1.6",
+    "angular-route": "^1.5.5",
+    "angular-resource": "^1.5.5",
+    "bootstrap": "^3.3.6",
+    "waypoints": "^4.0.0",
+    "nanoscroller": "^0.8.7",
+    "bootstrap3-dialog": "bootstrap-dialog#^1.35.1",
+    "messenger": "^1.5.0",
+    "bootstrap-datetimepicker": "^0.0.11",
+    "jquery": "^3.1.0"
+  }
+}

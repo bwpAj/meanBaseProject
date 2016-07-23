@@ -1,0 +1,87 @@
+<%include ../../header.ejs %>
+<body>
+    <section id="login-container">
+        <div class="row">
+            <div id="login-wrapper" class="col-md-3">
+                <div class="panel panel-primary">
+
+                    <div class="panel-heading">
+                        <h3 class="panel-title">注册</h3>
+                    </div>
+
+                    <div class="panel-body">
+                        <p>已经是用户?<a href="<%=adminDir%>/user/login"><strong>登录</strong></a></p>
+
+                        <form action='' role='form' method="post" onsubmit="return checkForm()">
+
+                            <div class="form-group">
+                                <label for="username">用户名</label>
+                                <input type="text" id="username" name="username" placeholder="请输入用户名" autofocus class="form-control"/>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="password1">密码</label>
+                                <input type="password" id="password1" name="password" placeholder="请输入密码"  class="form-control"/>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="name">姓名</label>
+                                <input type="text" id="name" name="name" placeholder="请输入姓名"  class="form-control"/>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email1">Email</label>
+                                <input type="email" id="email1" name="email" placeholder="请输入email"  class="form-control"/>
+                            </div>
+
+                            <input type="hidden" name="_csrf" value="<%=token%>"/>
+                            <button class="btn btn-primary btn-block" type="submit">注册</button>
+                            <!--<button type="button" data-toggle="modal" data-target="#myModal">弹出框</button>
+                            <button type="button" id="myModal1" onclick="show()">js弹出框</button>
+                            <button type="button" id="myModal1" onclick="show1()">警告</button>-->
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Modal -->
+
+
+    <%include ../../footer.ejs %>
+    <script>
+        function checkForm(){
+            var userName = $('#username').val();
+            if(!userName){
+                jsUtil.alert('用户名不能为空');
+                $('#username').focus();
+                return false;
+            }
+            var password = $('#password1').val();
+            if(!password){
+                jsUtil.alert('密码不能为空');
+                $('#password1').focus();
+                return false;
+            }
+            var name = $('#name').val();
+            if(!name){
+                jsUtil.alert('姓名不能为空');
+                $('#name').focus();
+                return false;
+            }
+            var email = $('#email1').val();
+            if(!email){
+                jsUtil.alert('邮箱不能为空');
+                $('#email1').focus();
+                return false;
+            }
+            return true;
+        }
+
+    </script>
+
+</body>
+</html>
+
+
