@@ -252,4 +252,9 @@ mainApplicationModule
                 });
         }
 
+    }])
+
+    .controller('fileContrller',['$scope','$q',function($scope,$q){
+        var defer = $q.defer();
+            
     }]);

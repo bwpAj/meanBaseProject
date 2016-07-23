@@ -28,7 +28,7 @@
                         <tbody>
                         <tr ng-repeat="user in users">
                             <td>
-                                <a href="#!/user/list/{{user._id}}/view" title="{{user.email}}">{{user.username}}</a>
+                                <a href="#!/user/{{user._id}}/view" title="{{user.email}}">{{user.username}}</a>
                             </td>
                             <td>
                                 {{user.name}}
@@ -45,7 +45,7 @@
                                 {{user.created}}
                             </td>
                             <td>
-                                <a href="#!/user/list/{{user._id}}/edit" class="btn btn-default btn-xs">编辑</a>
+                                <a href="#!/user/{{user._id}}/edit" class="btn btn-default btn-xs">编辑</a>
                                 <a ng-click="del(user._id)"  ng-if="user.status !== 101" class="btn btn-danger btn-xs J_del" >删除</a>
                             </td>
                         </tr>
