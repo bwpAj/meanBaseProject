@@ -21,37 +21,39 @@ mainApplicationModule.config(['$locationProvider','$routeProvider',
 
         $routeProvider
             .when('/me',{
-                templateUrl: '../me/me.client.view.html',
+                templateUrl: '../client/me/me.client.view.html',
                 controller: 'MeController'
             })
             .when('/me/edit',{
-                templateUrl: '../me/me.client.edit.html',
+                templateUrl: '../client/me/me.client.edit.html',
                 controller: 'MeController'
             })
             .when('/user/list',{
-                templateUrl: '../user/user.client.list.html',
+                templateUrl: '../client/user/user.client.list.html',
                 controller: 'userController'
             })
-            .when('/user/list/add',{
-                templateUrl: '../user/user.client.add.html',
+            .when('/user/add',{
+                templateUrl: '../client/user/user.client.add.html',
                 controller: 'userController'
             })
-            .when('/user/list/:userId/view',{
-                templateUrl: '../user/user.client.view.html',
+            .when('/user/:userId/view',{
+                templateUrl: '../client/user/user.client.view.html',
                 controller: 'userController'
             })
-            .when('/user/list/:userId/edit',{
-                templateUrl: '../user/user.client.edit.html',
+            .when('/user/:userId/edit',{
+                templateUrl: '../client/user/user.client.edit.html',
                 controller: 'userController'
             })
             .when('/file/list/',{
-                templateUrl: '../file/list.html'
+                templateUrl: '../client/file/list.html',
+                controller:'fileContrller'
             })
-            .when('/file/list/add',{
-                templateUrl: '../file/add.html'
+            .when('/file/add',{
+                templateUrl: '../client/file/add.html',
+                controller:'fileContrller'
             })
             .otherwise({
-                redirectTo:'/users/views/user.client.login.html'
+                redirectTo:'client/index.html'
             })
     }
 ]);
