@@ -237,36 +237,12 @@
       </section>
     </section>
 
-
-
   </section>
-  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog modal-sm" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="myModalLabel">Modal title</h4>
-        </div>
-        <div class="modal-body">
-          ...
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Save changes</button>
-        </div>
-      </div>
-    </div>
-  </div>
+  <!--公用组件-->
+  <div ng-include="'../client/component/popup.html'"></div>
 
-  <div class="alert alert-warning alert-dismissible fade in hide" id="d" role="alert">
-    Holy guacamole! Best check yo self, you're not looking too good.
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
-  </div>
 </body>
-<script>
-  window.token = '<%-token || '' %>';
-  window.user = '<%-User || '' %>';
-</script>
+
 <script src="../lib/jquery/dist/jquery.min.js"></script>
 <script src="../lib/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="../lib/bootstrap3-dialog/dist/js/bootstrap-dialog.min.js"></script>
@@ -282,15 +258,6 @@
 <script src="../lib/angular/angular.js"></script>
 <script src="../lib/angular-route/angular-route.js"></script>
 <script src="../lib/angular-resource/angular-resource.js"></script>
-
-<!--<script src="../users/user.client.module.js"></script>
-<script src="../users/controllers/user.client.controller.js"></script>
-<script src="../users/routes/user.client.routes.js"></script>
-
-<script src="../me/me.client.module.js"></script>
-<script src="../me/controllers/me.client.controller.js"></script>
-<script src="../me/routes/me.client.routes.js"></script>
-<script src="../me/services/me.client.service.js"></script>-->
 
 <script src="../application.js"></script>
 <script src="../directive.js"></script>

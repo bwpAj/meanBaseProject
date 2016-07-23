@@ -9,22 +9,10 @@
 
 mainApplicationModule
 
-    .controller('MeController', ['$scope', '$routeParams', '$location', 'Me', 'CommonUtil','$rootScope','$timeout','fileReader',
-        function ($scope, $routeParams, $location, Me, CommonUtil,$rootScope,$timeout,fileReader) {
-            //$scope.user = CommonUtil.user;
-            //console.log(JSON.stringify($scope.user));
-            /*$scope.localGender = [
-             {name:'贝伟平'},
-             {name:'男'},
-             {name:'保密'}
-             ];*/
-            /*$scope.users = [
-             {name:'a',id:'1'},
-             {name:'b',id:'2'},
-             {name:'c',id:'3'}
-             ];
-             $scope.selected='2';//id的值，区分类型*/
+    .controller('MeController', ['$scope', '$routeParams', '$location', 'Me','baseService','$rootScope','$timeout','fileReader',
+        function ($scope, $routeParams, $location, Me,baseService,$rootScope,$timeout,fileReader) {
 
+            // 公用方法可以通过服务来处理  baseService
             $rootScope.getObjPath = function(obj){
                 if (obj) {
                     //IE
@@ -72,7 +60,7 @@ mainApplicationModule
             $scope.getImgFileChange = function(obj){
                 //方式二
                 $timeout(function(){
-                    $scope.fileSrc = $rootScope.getObjPath(obj);
+                    $scope.fileSrc = baseService.getFilePath(obj);
                     $scope.disbledFlag = false;
                 },100);
                 //方式二
@@ -254,7 +242,20 @@ mainApplicationModule
 
     }])
 
-    .controller('fileContrller',['$scope','$q',function($scope,$q){
-        var defer = $q.defer();
-            
+    .controller('fileContrller',['$scope','baseService','$timeout',function($scope,baseService,$timeout){
+        $scope.hasFile = false;
+        $scope.getFileSource = function(){
+            $("#fileupload").click();
+        };
+        $scope.getFileChange = function(obj){
+            ///.+(jpg|jpeg|png)+$/.test(obj.value)
+            $timeout(function(){
+                if(obj.value && /^(\s|\S)+(jpg|jpeg|png)+$/.test(obj.value)){
+                    //图片
+                   $scope.imgPath = baseService.getFilePath(obj);
+                }
+                $scope.hasFile = true;
+                $scope.fileName = obj.value;
+            },100);
+        }
     }]);
