@@ -1,17 +1,27 @@
 <section>
     <div class="row">
         <div class="col-md-12">
-            <form action="">
-                <div class="form-group">
-                    <label for="">文件上传</label>
-                    <span class="gallery"></span>
-                    <span class="btn btn-success fileinput-button">
-                        <i class="glyphicon glyphicon-plus"></i>
-                        <span>添加文件</span>
-                        <input type="file" name="file[]" id="fileupload" multiple="multiple" style="display: none"/>
-                    </span>
-                </div>
-            </form>
+            <div class="panel panel-primary" style="height: 100%">
+                <div class="panel-heading">文件上传</div>
+                <form action="" style="width: 20%;margin: 100px auto 0;">
+                    <div class="form-group">
+                        <span class="gallery"></span>
+                        <p>{{fileName || ""}}</p>
+                        <p>
+                            <img ng-src="{{imgPath||'../images/file.png'}}" ng-if="hasFile" alt="" width="200" height="200"/>
+                        </p>
+                        <p>
+                        <span class="btn btn-success fileinput-button" ng-click="getFileSource()">
+                            <i class="glyphicon glyphicon-plus"></i>
+                            <span>添加文件</span>
+                        </span>
+                            <input type="file" name="file[]" id="fileupload" multiple="multiple" onchange="angular.element(this).scope().getFileChange(this)" style="display: none"/>
+                            <input type="button" class="btn btn-primary " ng-click="" value="提交" ng-if="hasFile"/>
+                        </p>
+                    </div>
+                </form>
+            </div>
+
         </div>
     </div>
 </section>
