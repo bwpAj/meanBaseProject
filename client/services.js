@@ -74,4 +74,44 @@ mainApplicationModule
     return {
         readAsDataUrl: readAsDataURL
     };
-}]);
+}])
+
+.factory('baseService',[
+        function(){
+            var baseService = {
+                getFilePath : function(obj){
+                    if (obj) {
+                        //IE
+                        if(window.navigator.userAgent.indexOf("MSIE 6.0")>=1){
+                            return obj.value;
+                        } else if (window.navigator.userAgent.indexOf("MSIE") >= 1) {
+                            obj.select();
+                            obj.blur();
+                            // IE下取得图片的本地路径
+                            return document.selection.createRange().text;
+                        }
+                        //firefox
+                        else if (window.navigator.userAgent.indexOf("Firefox") >= 1) {
+                            if (obj.files) {
+                                // Firefox下取得的是图片的数据
+                                var value = "";
+                                try{
+                                    value = window.URL.createObjectURL(obj.files[0]);
+                                }catch(e){
+                                    value = obj.files[0].getAsDataURL();
+                                }
+                                return value;
+                            }
+                        } else if (window.navigator.userAgent.indexOf("Chrome") >= 1) {
+                            return window.URL.createObjectURL(obj.files[0]);
+
+                        }
+                        return obj.value;
+                    }
+                }
+            };
+
+            return baseService;
+        }
+    ])
+;

@@ -21,27 +21,27 @@ mainApplicationModule.config(['$locationProvider','$routeProvider',
 
         $routeProvider
             .when('/me',{
-                templateUrl: '../client/me/me.client.view.html',
+                templateUrl: '../client/me/view.html',
                 controller: 'MeController'
             })
             .when('/me/edit',{
-                templateUrl: '../client/me/me.client.edit.html',
+                templateUrl: '../client/me/edit.html',
                 controller: 'MeController'
             })
             .when('/user/list',{
-                templateUrl: '../client/user/user.client.list.html',
+                templateUrl: '../client/user/list.html',
                 controller: 'userController'
             })
             .when('/user/add',{
-                templateUrl: '../client/user/user.client.add.html',
+                templateUrl: '../client/user/add.html',
                 controller: 'userController'
             })
             .when('/user/:userId/view',{
-                templateUrl: '../client/user/user.client.view.html',
+                templateUrl: '../client/user/view.html',
                 controller: 'userController'
             })
             .when('/user/:userId/edit',{
-                templateUrl: '../client/user/user.client.edit.html',
+                templateUrl: '../client/user/edit.html',
                 controller: 'userController'
             })
             .when('/file/list/',{
