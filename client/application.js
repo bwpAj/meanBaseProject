@@ -58,16 +58,6 @@ mainApplicationModule.config(['$locationProvider','$routeProvider',
     }
 ]);
 
-mainApplicationModule.factory('CommonUtil',[
-   function(){
-       this.token = window.token;
-       this.user = window.user;
-       return {
-           token: this.token,
-           user: this.user
-       }
-   }
-]);
 
 //facebook 身份验证后 再 OAuth回调中 会在URL的#加 修饰符
 if(window.location.hash == '#_=_') window.location.hash = '#!';
