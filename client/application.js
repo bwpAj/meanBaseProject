@@ -46,11 +46,11 @@ mainApplicationModule.config(['$locationProvider','$routeProvider',
             })
             .when('/file/list/',{
                 templateUrl: '../client/file/list.html',
-                controller:'fileContrller'
+                controller:'fileController'
             })
             .when('/file/add',{
                 templateUrl: '../client/file/add.html',
-                controller:'fileContrller' 
+                controller:'fileController'
             })
             .otherwise({
                 redirectTo:'client/index.html'

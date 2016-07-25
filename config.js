@@ -23,8 +23,8 @@ var config = {
         uploadDir: appPath + '/public/uploaded/files',
         uploadUrl:  '/uploaded/files/',
         maxPostSize: 100 * 1024 * 1024, // 100M
-        minFileSize:  1,
-        maxFileSize:  50 * 1024 * 1024, // 50M
+        minFileSize: 1,
+        maxFileSize: 50 * 1024 * 1024, // 50M
         acceptFileTypes:  /.+/i,
         storage: {
             type: 'local',//保存类型，如果保存到本地可省略或local, 目前支持7牛：qiniu
