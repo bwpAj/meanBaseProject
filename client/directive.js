@@ -207,6 +207,8 @@ mainApplicationModule.directive('tmPagination',[function(){
         link:function(scope, element, attrs){
             element.bind('change',function(event){
                 scope.file = (event.srcElement || event.target).files[0];
+                console.log(element.value);
+                scope.fileName = scope.file.name;
                 scope.getFile();
             })
         }

@@ -242,7 +242,42 @@ mainApplicationModule
 
     }])
 
-    .controller('fileContrller',['$scope','baseService','$timeout',function($scope,baseService,$timeout){
+    .controller('fileController',['$scope','$timeout','baseService','fileService','$http','fileReader','Upload',function($scope,$timeout,baseService,fileService,$http,fileReader,Upload){
+
+        $scope.submit = function () {
+            $scope.upload($scope.file);
+        };
+        $scope.upload = function (file) {
+            $scope.fileInfo = file;
+            Upload.upload({
+                //服务端接收
+                url: 'Ashx/UploadFile.ashx',
+                //上传的同时带的参数
+                data: { 'username': $scope.username },
+                file: file
+            }).progress(function (evt) {
+                //进度条
+                var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+                console.log('progess:' + progressPercentage + '%' + evt.config.file.name);
+            }).success(function (data, status, headers, config) {
+                //上传成功
+                console.log('file ' + config.file.name + 'uploaded. Response: ' + data);
+                $scope.uploadImg = data;
+            }).error(function (data, status, headers, config) {
+                //上传失败
+                console.log('error status: ' + status);
+            });
+        };
+
+
+        $scope.getFile = function () {
+            fileReader.readAsDataUrl($scope.file, $scope)
+                .then(function(result) {
+                    $scope.imgPath = result;
+                    $scope.hasFile = true;
+                });
+        };
+
         $scope.hasFile = false;
         $scope.getFileSource = function(){
             $("#fileupload").click();
@@ -257,6 +292,46 @@ mainApplicationModule
                 $scope.hasFile = true;
                 $scope.fileName = obj.value;
             },100);
+        };
+
+        //新增文件
+        $scope.add = function(){
+            console.log($('#fileupload').val());
+            $scope.fileupload = $('#fileupload').val();
+            var postData = {
+                fileName: $scope.imgPath
+            };
+            console.log(postData);
+            /*var fileData = new FormData();
+            fileData.append('files', $scope.file);
+            console.log(fileData);
+            var file = new fileService(fileData);
+            file.$save(function(res){
+
+            },function(err){
+
+            });*/
+            var promise = postMultipart('/admin/file/list', postData);
+
+
+        };
+
+        function postMultipart(url, data) {
+            var fd = new FormData();
+            angular.forEach(data, function(val, key) {
+                console.log(val+"--"+key);
+                fd.append(key, val);
+            });
+            console.log(fd);
+            var args = {
+                method: 'POST',
+                url: url,
+                data: fd,
+                headers: {'Content-Type': undefined},
+                transformRequest: angular.identity
+            };
+            return $http(args);
         }
+
 
     }]);
