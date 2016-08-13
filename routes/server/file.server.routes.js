@@ -26,7 +26,7 @@ router.use(function(req,res,next){
     next();
 });
 
-router.route('/list').post(filter.add);
+router.route('/list').all(filter.add);
 
 module.exports = function(app){
     var path = core.translateAdminDir('/file');
