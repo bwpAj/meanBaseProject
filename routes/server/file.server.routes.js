@@ -9,7 +9,7 @@
 var express = require('express');
 var router = express.Router();
 var core = require('../../libs/core');
-var filter = require('../../controllers/server/filter.server.controller');
+var filter = require('../../controllers/server/file.server.controller');
 
 router.use(function(req, res,next){
     console.log('user routes===='+new Date());
@@ -26,9 +26,9 @@ router.use(function(req,res,next){
     next();
 });
 
-router.route('/list').post(filter.add);
+router.route('/list').all(filter.add);
 
 module.exports = function(app){
-    var path = core.translateAdminDir('/filter');
-    app.user(path,router);
+    var path = core.translateAdminDir('/file');
+    app.use(path,router);
 };

@@ -4,7 +4,7 @@
 
 var mainApplicationModuleName = 'mean';
 
-var mainApplicationModule = angular.module(mainApplicationModuleName,['ngResource','ngRoute']);
+var mainApplicationModule = angular.module(mainApplicationModuleName,['ngResource','ngRoute','ngFileUpload']);
 
 
 //搜索引擎爬虫 优化

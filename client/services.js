@@ -43,7 +43,22 @@ mainApplicationModule
                 }
             })
         }
-    ])
+])
+.factory('fileService',['$resource',
+    function($resource){
+        return $resource('/admin/file/list/:fileId',{
+            fileId:'@_id',
+        },{
+            //扩展的update方法
+            update:{
+                method:'PUT'
+            },
+            query:{
+                isArray:false
+            }
+        })
+    }
+])
 .factory('fileReader', ["$q", "$log", function($q, $log){
     var onLoad = function(reader, deferred, scope) {
         return function () {

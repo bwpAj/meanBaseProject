@@ -242,7 +242,24 @@ mainApplicationModule
 
     }])
 
-    .controller('fileContrller',['$scope','baseService','$timeout',function($scope,baseService,$timeout){
+    .controller('fileController',['$scope','$timeout','baseService','fileService','$http','fileReader','Upload',function($scope,$timeout,baseService,fileService,$http,fileReader,Upload){
+
+        $scope.submit = function () {
+            $scope.upload($scope.file);
+        };
+
+        /*通过指令 fileModel 获取base64 地址====================== */
+        $scope.getFile = function () {
+            fileReader.readAsDataUrl($scope.file, $scope)
+                .then(function(result) {
+                    $scope.imgPath = result;
+                    $scope.hasFile = true;
+                });
+        };
+        /*通过指令 fileModel 获取base64 地址====================== */
+
+
+        /*通过按钮触发file表单的change事件 获取file的地址======================*/
         $scope.hasFile = false;
         $scope.getFileSource = function(){
             $("#fileupload").click();
@@ -256,7 +273,74 @@ mainApplicationModule
                 }
                 $scope.hasFile = true;
                 $scope.fileName = obj.value;
+                $scope.file = obj.value;
             },100);
+        };
+        /*通过按钮触发file表单的change事件 获取file的地址======================*/
+
+
+        //新增文件
+        $scope.addFile = function(file,resumable){
+
+            file = document.querySelector('input[type=file]').files[0];
+            console.log($scope.file);
+            uploadUsingUpload(file, resumable);
+
+        };
+
+        $scope.save = function() {
+            var fd = new FormData();
+            var file = document.querySelector('input[type=file]').files[0];
+            fd.append('files', file);
+            $http({
+                method:'POST',
+                url:"/admin/file/list",
+                data: fd,
+                headers: {'Content-Type':undefined},
+                transformRequest: angular.identity
+            })
+                .success( function ( response )
+                {
+                    //上传成功的操作
+                    alert("uplaod success");
+                });
+
         }
+
+
+        function uploadUsingUpload(file, resumable) {
+            file.upload = Upload.upload({
+                url: '/admin/file/list' + $scope.getReqParams(),
+                resumeSizeUrl: resumable ? '/admin/file/list?name=' + encodeURIComponent(file.name) : null,
+                resumeChunkSize: resumable ? $scope.chunkSize : null,
+                headers: {'Content-Type': 'multipart/form-data'},
+                data: {file: file}
+            });
+            file.upload.then(function (response) {
+                if(response.data.type == 1){
+
+                }
+                jsUtil.alert(response.data.message);
+
+            }, function (response) {
+                if (response.status > 0)
+                    $scope.errorMsg = response.status + ': ' + response.data;
+            }, function (evt) {
+                // Math.min is to fix IE which reports 200% sometimes
+                //file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+            });
+
+            file.upload.xhr(function (xhr) {
+                // xhr.upload.addEventListener('abort', function(){console.log('abort complete')}, false);
+            });
+        }
+
+        $scope.getReqParams = function () {
+            return $scope.generateErrorOnServer ? '?errorCode=' + $scope.serverErrorCode +
+            '&errorMessage=' + $scope.serverErrorMsg : '';
+        };
+
+
+
 
     }]);

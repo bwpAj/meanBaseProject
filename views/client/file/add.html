@@ -2,12 +2,13 @@
     <div class="row">
         <div class="col-md-12">
             <div class="panel panel-primary" style="height: 100%">
+                <!--<input type="file" ng-file-select="onFileSelect($files)">-->
                 <div class="panel-heading">文件上传</div>
-                <form action="" style="width: 20%;margin: 100px auto 0;">
+                <form style="width: 20%;margin: 100px auto 0;" >
                     <div class="form-group">
                         <span class="gallery"></span>
                         <p>{{fileName || ""}}</p>
-                        <p>
+                        <p style="min-height: 200px;">
                             <img ng-src="{{imgPath||'../images/file.png'}}" ng-if="hasFile" alt="" width="200" height="200"/>
                         </p>
                         <p>
@@ -15,8 +16,11 @@
                             <i class="glyphicon glyphicon-plus"></i>
                             <span>添加文件</span>
                         </span>
-                            <input type="file" name="file[]" id="fileupload" multiple="multiple" onchange="angular.element(this).scope().getFileChange(this)" style="display: none"/>
-                            <input type="button" class="btn btn-primary " ng-click="" value="提交" ng-if="hasFile"/>
+                            <!--angular 指令 读取文件 返回二进制一样的东东-->
+                            <!--<input type="file" id="fileupload" ng-model="fileupload" multiple="multiple" file-model="myFile" style="display: none" />-->
+                            <!--通过 document.URL.createObjURL 返回file路径-->
+                                <input type="file" name="file" ng-model="file" id="fileupload" multiple="multiple" onchange="angular.element(this).scope().getFileChange(this)" style="display: none"/>
+                            <input type="button" class="btn btn-primary " ng-click="addFile()" value="提交" ng-if="hasFile"/>
                         </p>
                     </div>
                 </form>
