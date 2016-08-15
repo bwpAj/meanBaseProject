@@ -9,11 +9,11 @@
 var express = require('express');
 var router = express.Router();
 var core = require('../../libs/core');
-var filter = require('../../controllers/server/file.server.controller');
+var file = require('../../controllers/server/file.server.controller');
 
 router.use(function(req, res,next){
-    console.log('user routes===='+new Date());
-    res.locals.Path = 'filter';
+    console.log('file routes===='+new Date());
+    res.locals.Path = 'file';
     next();
 });
 
@@ -26,7 +26,8 @@ router.use(function(req,res,next){
     next();
 });
 
-router.route('/list').all(filter.add);
+router.route('/list').get(file.list).post(file.add);
+router.route('/list/:fileId').delete(file.del);
 
 module.exports = function(app){
     var path = core.translateAdminDir('/file');
