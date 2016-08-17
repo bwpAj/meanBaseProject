@@ -1,245 +1,201 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!--<base href="/app" />-->
-  <meta charset="utf-8"/>
-  <meta name='description' content=''/>
-  <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'>
-  <meta name="keywords" content="">
-  <title><%= title %></title>
-  <link rel='stylesheet' href='../lib/bootstrap/dist/css/bootstrap.min.css' />
-  <link rel='stylesheet' href='../lib/bootstrap3-dialog/dist/css/bootstrap-dialog.min.css' />
-  <link rel='stylesheet' href='../lib/messenger/build/css/messenger.css' />
-  <link rel='stylesheet' href='../lib/messenger/build/css/messenger-theme-flat.css' />
-  <link rel='stylesheet' href='../stylesheets/chosen.css' />
-  <link rel='stylesheet' href='../stylesheets/font-awesome.min.css' />
-  <link rel='stylesheet' href='../stylesheets/animate.css' />
-  <link rel='stylesheet' href='../stylesheets/main.css' />
-  <link rel='stylesheet' href='../stylesheets/style.css' />
-  <script src="../javascripts/modernizr-2.6.2.min.js"></script>
+    <!--<base href="/app" />-->
+    <meta charset="utf-8"/>
+    <meta name='description' content=''/>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'>
+    <meta name="keywords" content="">
+    <title><%= title %></title>
+    <link rel='stylesheet' href='../lib/bootstrap/dist/css/bootstrap.min.css'/>
+    <link rel='stylesheet' href='../lib/bootstrap3-dialog/dist/css/bootstrap-dialog.min.css'/>
+    <link rel='stylesheet' href='../lib/messenger/build/css/messenger.css'/>
+    <link rel='stylesheet' href='../lib/messenger/build/css/messenger-theme-flat.css'/>
+    <link rel='stylesheet' href='../stylesheets/chosen.css'/>
+    <link rel='stylesheet' href='../stylesheets/font-awesome.min.css'/>
+    <link rel='stylesheet' href='../stylesheets/animate.css'/>
+    <link rel='stylesheet' href='../stylesheets/main.css'/>
+    <link rel='stylesheet' href='../stylesheets/style.css'/>
+    <script src="../javascripts/modernizr-2.6.2.min.js"></script>
 
-  <style>
-    .page-list .pagination {float:left;}
-    .page-list .pagination span {cursor: pointer;}
-    .page-list .pagination .separate span{cursor: default; border-top:none;border-bottom:none;}
-    .page-list .pagination .separate span:hover {background: none;}
-    .page-list .page-total {float:left; margin: 19px 20px;}
-    .page-list .page-total input, .page-list .page-total select{height: 34px; border: 1px solid #ddd;border-radius: 4px;outline: none;text-align: center}
-    .page-list .page-total input {width: 40px;}
-    .page-list .page-total input:focus,.page-list .page-total select:focus{border-color: #1abc9c;color: #1abc9c;}
-    .page-list .page-total select {width: 50px;}
-    /*.page-total input{border-color: #1abc9c;  color: #fff;}*/
-    /*.img-circle {cursor: pointer}*/
-  </style>
+    <style>
+        .page-list .pagination {
+            float: left;
+        }
+
+        .page-list .pagination span {
+            cursor: pointer;
+        }
+
+        .page-list .pagination .separate span {
+            cursor: default;
+            border-top: none;
+            border-bottom: none;
+        }
+
+        .page-list .pagination .separate span:hover {
+            background: none;
+        }
+
+        .page-list .page-total {
+            float: left;
+            margin: 19px 20px;
+        }
+
+        .page-list .page-total input, .page-list .page-total select {
+            height: 34px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            outline: none;
+            text-align: center
+        }
+
+        .page-list .page-total input {
+            width: 40px;
+        }
+
+        .page-list .page-total input:focus, .page-list .page-total select:focus {
+            border-color: #1abc9c;
+            color: #1abc9c;
+        }
+
+        .page-list .page-total select {
+            width: 50px;
+        }
+
+        /*.page-total input{border-color: #1abc9c;  color: #fff;}*/
+        /*.img-circle {cursor: pointer}*/
+    </style>
 
 </head>
 <body>
-  <section id="container">
+<section id="container">
     <header id="header">
 
-      <div class="brand"><a href="<%=adminDir%>" class="logo">管理后台</a></div>
+        <div class="brand"><a href="<%= adminDir %>" class="logo">管理后台</a></div>
 
-      <div class="toggle-navigation toggle-left">
-        <button class="toggle-left btn btn-default" type="button" data-toggle="tooltip" data-placemnet="right" title="切换左栏"><i class="fa fa-bars"></i></button>
-      </div>
+        <div class="toggle-navigation toggle-left">
+            <button class="toggle-left btn btn-default" type="button" data-toggle="tooltip" data-placemnet="right"
+                    title="切换左栏"><i class="fa fa-bars"></i></button>
+        </div>
 
-      <div class="user-nav">
-        <ul>
-          <% if(User) {  var avatar = gravatar.url(User.email,{s: '40', r:'x', d:'retro'}, true ) %>
-              <li class="profile-photo">
-                <!--<img src="<%=avatar%>" alt="" class="img-circle"/>-->
-              </li>
-              <li class="dropdown settings">
-                <a href="" class="dropdown-toggle" data-toggle="dropdown"><%=User.name%>
-                  <i class="fa fa-angle-down"></i>
-                </a>
-                <ul class="dropdown-menu">
-                  <li><a href="#!/me"><i class="fa fa-user"></i>个人资料</a></li>
-                  <li><a href="<%=adminDir%>/user/logout"><i class="fa fa-power-off"></i>登出</a></li>
-                </ul>
-              </li>
-          <% } %>
-        </ul>
-      </div>
+        <div class="user-nav">
+            <ul>
+                <% if(User) {  var avatar = gravatar.url(User.email, {s: '40', r: 'x', d: 'retro'}, true) %>
+                <li class="profile-photo">
+                    <!--<img src="<%= avatar %>" alt="" class="img-circle"/>-->
+                </li>
+                <li class="dropdown settings">
+                    <a href="" class="dropdown-toggle" data-toggle="dropdown"><%= User.name %>
+                        <i class="fa fa-angle-down"></i>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#!/me"><i class="fa fa-user"></i>个人资料</a></li>
+                        <li><a href="<%= adminDir %>/user/logout"><i class="fa fa-power-off"></i>登出</a></li>
+                    </ul>
+                </li>
+                <% } %>
+            </ul>
+        </div>
 
     </header>
     <aside class="sidebar">
-      <div id="leftside-navigation" class="nano">
-        <ul class="nano-content">
-          <li class="<%= Path === 'index' ? 'active' : ''  %>">
-            <a href="<%=adminDir%>"><i class="fa fa-dashboard"></i><span>首页</span></a>
-          </li>
+        <div id="leftside-navigation" class="nano">
+            <ul class="nano-content">
+                <li class="<%= Path === 'index' ? 'active' : '' %>">
+                    <a href="<%= adminDir %>"><i class="fa fa-dashboard"></i><span>首页</span></a>
+                </li>
 
-          <% if(User && Roles.indexOf('admin') > -1 || Actions.indexOf('CONTENT_INDEX') > -1 ) {%>
-            <li class="sub-menu <%=Path === 'content' ? 'active' : '' %>">
-              <a href="javascript:void(0)">
-                <i class="fa fa-file text"></i>
-                <span>内容</span>
-                <i class="arrow fa fa-angle-right pull-right"></i>
-              </a>
-              <ul>
-                <li class="<%= Menu === 'list' ? 'active' : '' %>">
-                  <a href="<%adminDir%>/content">内容列表</a>
+                <% if(User && Roles.indexOf('admin') > -1 || Actions.indexOf('COMMENT_INDEX') > -1 ) { %>
+                <li class="<%= Path === 'comment' ? 'active' : '' %>">
+                    <a href="javascript:void(0)">
+                        <span>评论列表</span>
+                    </a>
                 </li>
-                <li class="<%= Menu === 'add' ? 'active' : '' %>">
-                  <a href="<%adminDir%>/content/add">添加内容</a>
-                </li>
-              </ul>
-            </li>
-          <% } %>
+                <% } %>
 
-          <% if(User && Roles.indexOf('admin') > -1 || Actions.indexOf('CATEGORY_INDEX') > -1 ) {%>
-            <li class="sub-menu <%=Path === 'category' ? 'active' : '' %>">
-              <a href="javascript:void(0)">
-                <i class="fa fa-th"></i>
-                <span>分类</span>
-                <i class="arrow fa fa-angle-right pull-right"></i>
-              </a>
-              <ul>
-                <li class="<%= Menu === 'list' ? 'active' : '' %>">
-                  <a href="<%adminDir%>/category">分类列表</a>
+                <% if(User && Roles.indexOf('admin') > -1 || Actions.indexOf('USER_INDEX') > -1 ) { %>
+                <li class="sub-menu <%= Path === 'user' ? 'active' : '' %>">
+                    <a href="javascript:void(0)">
+                        <i class="fa fa-users"></i>
+                        <span>用户</span>
+                        <i class="arrow fa fa-angle-right pull-right"></i>
+                    </a>
+                    <ul>
+                        <li class="<%= Menu === 'list' ? 'active' : '' %>">
+                            <a href="#!/user/list">用户列表</a>
+                        </li>
+                        <li class="<%= Menu === 'add' ? 'active' : '' %>">
+                            <a href="#!/user/add">添加用户</a>
+                        </li>
+                    </ul>
                 </li>
-                <li class="<%= Menu === 'add' ? 'active' : '' %>">
-                  <a href="<%adminDir%>/category/add">添加分类</a>
-                </li>
-              </ul>
-            </li>
-          <% } %>
+                <% } %>
 
-          <% if(User && Roles.indexOf('admin') > -1 || Actions.indexOf('COMMENT_INDEX') > -1 ) {%>
-            <li class="<%=Path === 'comment' ? 'active' : '' %>">
-              <a href="javascript:void(0)">
-                <span>评论列表</span>
-              </a>
-            </li>
-          <% } %>
-
-          <% if(User && Roles.indexOf('admin') > -1 || Actions.indexOf('USER_INDEX') > -1 ) {%>
-            <li class="sub-menu <%=Path === 'user' ? 'active' : '' %>">
-              <a href="javascript:void(0)">
-                <i class="fa fa-users"></i>
-                <span>用户</span>
-                <i class="arrow fa fa-angle-right pull-right"></i>
-              </a>
-              <ul>
-                <li class="<%= Menu === 'list' ? 'active' : '' %>">
-                  <a href="#!/user/list">用户列表</a>
+                <% if(User && Roles.indexOf('admin') > -1 || Actions.indexOf('ROLE_INDEX') > -1 ) { %>
+                <li class="sub-menu <%= Path === 'role' ? 'active' : '' %>">
+                    <a href="javascript:void(0)">
+                        <i class="fa fa-unlock-alt"></i>
+                        <span>角色</span>
+                        <i class="arrow fa fa-angle-right pull-right"></i>
+                    </a>
+                    <ul>
+                        <li class="<%= Menu === 'list' ? 'active' : '' %>">
+                            <a href="<% adminDir %>/role">角色列表</a>
+                        </li>
+                        <li class="<%= Menu === 'add' ? 'active' : '' %>">
+                            <a href="<% adminDir %>/role/add">添加角色</a>
+                        </li>
+                    </ul>
                 </li>
-                <li class="<%= Menu === 'add' ? 'active' : '' %>">
-                  <a href="#!/user/add">添加用户</a>
-                </li>
-              </ul>
-            </li>
-          <% } %>
+                <% } %>
 
-          <% if(User && Roles.indexOf('admin') > -1 || Actions.indexOf('ROLE_INDEX') > -1 ) {%>
-          <li class="sub-menu <%=Path === 'role' ? 'active' : '' %>">
-            <a href="javascript:void(0)">
-              <i class="fa fa-unlock-alt"></i>
-              <span>角色</span>
-              <i class="arrow fa fa-angle-right pull-right"></i>
-            </a>
-            <ul>
-              <li class="<%= Menu === 'list' ? 'active' : '' %>">
-                <a href="<%adminDir%>/role">角色列表</a>
-              </li>
-              <li class="<%= Menu === 'add' ? 'active' : '' %>">
-                <a href="<%adminDir%>/role/add">添加角色</a>
-              </li>
+                <% if(User && Roles.indexOf('admin') > -1 || Actions.indexOf('FILE_INDEX') > -1 ) { %>
+                <li class="sub-menu <%= Path === 'file' ? 'active' : '' %>">
+                    <a href="javascript:void(0)">
+                        <i class="fa fa-folder-open"></i>
+                        <span>文件</span>
+                        <i class="arrow fa fa-angle-right pull-right"></i>
+                    </a>
+                    <ul>
+                        <li class="<%= Menu === 'list' ? 'active' : '' %>">
+                            <a href="#!/file/list">文件列表</a>
+                        </li>
+                        <li class="<%= Menu === 'add' ? 'active' : '' %>">
+                            <a href="#!/file/add">添加文件</a>
+                        </li>
+                    </ul>
+                </li>
+                <% } %>
+
+                <% if(User && (Roles.indexOf('admin') > -1 || Actions.indexOf('MESSAGE_INDEX') > -1) ) { %>
+                <li class="sub-menu <%= Path === 'file' ? 'active' : '' %>">
+                    <a href="javascript:void(0)">
+                        <i class="fa fa-comment"></i>
+                        <span>访客留言</span>
+                        <i class="arrow fa fa-angle-right pull-right"></i>
+                    </a>
+                    <ul>
+                        <li class="<%= Menu === 'list' ? 'active' : '' %>">
+                            <a href="<% adminDir %>/message">留言列表</a>
+                        </li>
+                    </ul>
+                </li>
+                <% } %>
+
             </ul>
-          </li>
-          <% } %>
-
-          <% if(User && Roles.indexOf('admin') > -1 || Actions.indexOf('FILE_INDEX') > -1 ) {%>
-            <li class="sub-menu <%=Path === 'file' ? 'active' : '' %>">
-              <a href="javascript:void(0)">
-                <i class="fa fa-folder-open"></i>
-                <span>文件</span>
-                <i class="arrow fa fa-angle-right pull-right"></i>
-              </a>
-              <ul>
-                <li class="<%= Menu === 'list' ? 'active' : '' %>">
-                  <a href="#!/file/list">文件列表</a>
-                </li>
-                <li class="<%= Menu === 'add' ? 'active' : '' %>">
-                  <a href="#!/file/add">添加文件</a>
-                </li>
-              </ul>
-            </li>
-          <% } %>
-
-          <% if(User && Roles.indexOf('admin') > -1 || Actions.indexOf('FILE_INDEX') > -1 ) {%>
-            <li class="sub-menu <%=Path === 'file' ? 'active' : '' %>">
-              <a href="javascript:void(0)">
-                <i class="fa fa-envelope"></i>
-                <span>站内信</span>
-                <i class="arrow fa fa-angle-right pull-right"></i>
-              </a>
-              <ul>
-                <li class="<%= Menu === 'list' ? 'active' : '' %>">
-                  <a href="<%adminDir%>/notification">已收到</a>
-                </li>
-                <li class="<%= Menu === 'add' ? 'active' : '' %>">
-                  <a href="<%adminDir%>/notification/sent">已发出</a>
-                </li>
-              </ul>
-            </li>
-          <% } %>
-
-          <% if(User && Roles.indexOf('admin') > -1 || Actions.indexOf('MESSAGE_INDEX') > -1 ) {%>
-            <li class="sub-menu <%=Path === 'file' ? 'active' : '' %>">
-              <a href="javascript:void(0)">
-                <i class="fa fa-comment"></i>
-                <span>访客留言</span>
-                <i class="arrow fa fa-angle-right pull-right"></i>
-              </a>
-              <ul>
-                <li class="<%= Menu === 'list' ? 'active' : '' %>">
-                  <a href="<%adminDir%>/message">留言列表</a>
-                </li>
-              </ul>
-            </li>
-          <% } %>
-
-          <% if(User && Roles.indexOf('admin') > -1 || Actions.indexOf('PAGE_INDEX') > -1 ) {%>
-            <li class="sub-menu <%=Path === 'file' ? 'active' : '' %>">
-              <a href="javascript:void(0)">
-                <span>页面列表</span>
-              </a>
-            </li>
-          <% } %>
-
-          <% if(User && Roles.indexOf('admin') > -1 || Actions.indexOf('TAG_INDEX') > -1 ) {%>
-            <li class="sub-menu <%=Path === 'file' ? 'active' : '' %>">
-              <a href="javascript:void(0)">
-                <i class="fa fa-tags"></i>
-                <span>标签</span>
-                <i class="arrow fa fa-angle-right pull-right"></i>
-              </a>
-              <ul>
-                <li class="<%= Menu === 'list' ? 'active' : '' %>">
-                  <a href="<%adminDir%>/tag">标签列表</a>
-                </li>
-                <li class="<%= Menu === 'add' ? 'active' : '' %>">
-                  <a href="<%adminDir%>/tag/add">添加标签</a>
-                </li>
-              </ul>
-            </li>
-          <% } %>
-
-        </ul>
-      </div>
+        </div>
     </aside>
 
     <section class="main-content-wrapper">
-      <section id="main-content">
-        <section ng-view></section>
-      </section>
+        <section id="main-content">
+            <section ng-view></section>
+        </section>
     </section>
 
-  </section>
-  <!--公用组件-->
-  <div ng-include="'../client/component/popup.html'"></div>
+</section>
+<!--公用组件-->
+<div ng-include="'../client/component/popup.html'"></div>
 
 </body>
 

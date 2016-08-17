@@ -1,75 +1,38 @@
 /**
  *
  * =================================================================================================
- *     Task ID			  Date			     Author		      Description
+ *     Task ID              Date                 Author              Description
  * ----------------+----------------+-------------------+-------------------------------------------
- *     Angularjs          2016年6月22日         beiwp			  新建MeController控制器
+ *     Angularjs          2016年6月22日         beiwp              新建MeController控制器
  */
 'use strict';
 
 mainApplicationModule
 
-    .controller('MeController', ['$scope', '$routeParams', '$location', 'Me','baseService','$rootScope','$timeout','fileReader',
-        function ($scope, $routeParams, $location, Me,baseService,$rootScope,$timeout,fileReader) {
+    .controller('MeController', ['$scope', '$routeParams', '$location', 'Me', 'baseService', '$rootScope', '$timeout', 'fileReader',
+        function ($scope, $routeParams, $location, Me, baseService, $rootScope, $timeout, fileReader) {
 
-            // 公用方法可以通过服务来处理  baseService
-            $rootScope.getObjPath = function(obj){
-                if (obj) {
-                    //IE
-                    if(window.navigator.userAgent.indexOf("MSIE 6.0")>=1){
-                        return obj.value;
-                    } else if (window.navigator.userAgent.indexOf("MSIE") >= 1) {
-                        obj.select();
-                        obj.blur();
-                        // IE下取得图片的本地路径
-                        return document.selection.createRange().text;
-                    }
-                    //firefox
-                    else if (window.navigator.userAgent.indexOf("Firefox") >= 1) {
-                        if (obj.files) {
-                            // Firefox下取得的是图片的数据
-                            var value = "";
-                            try{
-                                value = window.URL.createObjectURL(obj.files[0]);
-                            }catch(e){
-                                value = obj.files[0].getAsDataURL();
-                            }
-                            return value;
-                        }
-                    } else if (window.navigator.userAgent.indexOf("Chrome") >= 1) {
-                        return window.URL.createObjectURL(obj.files[0]);
-
-                    }
-                    return obj.value;
-                }
-            };
-            $scope.getFile = function () {
-                fileReader.readAsDataUrl($scope.file, $scope)
-                    .then(function(result) {
-                            $scope.imageSrc = result;
-                    });
-            };
 
             $scope.disbledFlag = true; //按钮disabled
             //trigger input file
-            $scope.triggerImgFile = function(){
+            $scope.triggerImgFile = function () {
                 $("#userFile").click();
                 $scope.disbledFlag = true;
             };
             //input file onchange
-            $scope.getImgFileChange = function(obj){
+            $scope.getImgFileChange = function (obj) {
                 //方式二
-                $timeout(function(){
+                $timeout(function () {
                     $scope.fileSrc = baseService.getFilePath(obj);
                     $scope.disbledFlag = false;
-                },100);
+                }, 100);
                 //方式二
                 /*setTimeout(function(){
-                    $scope.$apply(function(){
-                        $scope.fileSrc = $rootScope.getObjPath(obj);
-                        $scope.disbledFlag = false;
-                    })
-                },100);*/
+                 $scope.$apply(function(){
+                 $scope.fileSrc = $rootScope.getObjPath(obj);
+                 $scope.disbledFlag = false;
+                 })
+                 },100);*/
             };
 
             $scope.find = function () {
@@ -133,7 +96,7 @@ mainApplicationModule
                 })
             };
 
-            $scope.upImage = function(){
+            $scope.upImage = function () {
 
             }
         }
@@ -242,16 +205,21 @@ mainApplicationModule
 
     }])
 
-    .controller('fileController',['$scope','$timeout','baseService','fileService','$http','fileReader','Upload',function($scope,$timeout,baseService,fileService,$http,fileReader,Upload){
+    .controller('fileController', ['$scope', '$timeout', 'baseService', 'fileService', 'fileReader', 'Upload', '$location', function ($scope, $timeout, baseService, fileService, fileReader, Upload, $location) {
 
         $scope.submit = function () {
             $scope.upload($scope.file);
         };
 
+        //文件类型判断
+        $scope.ifImg = function (typeImg) {
+            return typeImg && /\.(jpg|gif|png|bmp|jpeg|gif)/i.test(typeImg) ? true : false;
+        };
+
         /*通过指令 fileModel 获取base64 地址====================== */
         $scope.getFile = function () {
             fileReader.readAsDataUrl($scope.file, $scope)
-                .then(function(result) {
+                .then(function (result) {
                     $scope.imgPath = result;
                     $scope.hasFile = true;
                 });
@@ -261,86 +229,89 @@ mainApplicationModule
 
         /*通过按钮触发file表单的change事件 获取file的地址======================*/
         $scope.hasFile = false;
-        $scope.getFileSource = function(){
+        $scope.getFileSource = function () {
             $("#fileupload").click();
         };
-        $scope.getFileChange = function(obj){
+        $scope.getFileChange = function (obj) {
             ///.+(jpg|jpeg|png)+$/.test(obj.value)
-            $timeout(function(){
-                if(obj.value && /^(\s|\S)+(jpg|jpeg|png)+$/.test(obj.value)){
+            $timeout(function () {
+                if (obj.value && /^(\s|\S)+(jpg|jpeg|png)+$/.test(obj.value)) {
                     //图片
-                   $scope.imgPath = baseService.getFilePath(obj);
+                    $scope.imgPath = baseService.getFilePath(obj);
                 }
                 $scope.hasFile = true;
                 $scope.fileName = obj.value;
                 $scope.file = obj.value;
-            },100);
+            }, 100);
         };
         /*通过按钮触发file表单的change事件 获取file的地址======================*/
 
 
         //新增文件
-        $scope.addFile = function(file,resumable){
-
-            file = document.querySelector('input[type=file]').files[0];
-            console.log($scope.file);
-            uploadUsingUpload(file, resumable);
-
-        };
-
-        $scope.save = function() {
-            var fd = new FormData();
+        $scope.addFile = function () {
             var file = document.querySelector('input[type=file]').files[0];
-            fd.append('files', file);
-            $http({
-                method:'POST',
-                url:"/admin/file/list",
-                data: fd,
-                headers: {'Content-Type':undefined},
-                transformRequest: angular.identity
-            })
-                .success( function ( response )
-                {
-                    //上传成功的操作
-                    alert("uplaod success");
-                });
-
-        }
-
-
-        function uploadUsingUpload(file, resumable) {
-            file.upload = Upload.upload({
-                url: '/admin/file/list' + $scope.getReqParams(),
-                resumeSizeUrl: resumable ? '/admin/file/list?name=' + encodeURIComponent(file.name) : null,
-                resumeChunkSize: resumable ? $scope.chunkSize : null,
-                headers: {'Content-Type': 'multipart/form-data'},
-                data: {file: file}
-            });
-            file.upload.then(function (response) {
-                if(response.data.type == 1){
-
+            // 方式一
+            /*baseService.uploadUsingHttp('/admin/file/list',file,function(response){
+             //上传成功的操作
+             if(response.type == 1){
+             $location.path('/file/list');
+             }
+             jsUtil.alert(response.message);
+             },function(err){
+             jsUtil.alert('上传时系统出错');
+             });*/
+            // 方式二
+            baseService.uploadUsingUpload('/admin/file/list', file, '', function (response) {
+                //上传成功的操作
+                if (response.data.type == 1) {
+                    $location.path('/file/list');
                 }
                 jsUtil.alert(response.data.message);
-
-            }, function (response) {
-                if (response.status > 0)
-                    $scope.errorMsg = response.status + ': ' + response.data;
-            }, function (evt) {
-                // Math.min is to fix IE which reports 200% sometimes
-                //file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+            }, function (err) {
+                jsUtil.alert('上传时系统出错');
             });
-
-            file.upload.xhr(function (xhr) {
-                // xhr.upload.addEventListener('abort', function(){console.log('abort complete')}, false);
-            });
-        }
-
-        $scope.getReqParams = function () {
-            return $scope.generateErrorOnServer ? '?errorCode=' + $scope.serverErrorCode +
-            '&errorMessage=' + $scope.serverErrorMsg : '';
         };
 
+        //配置分页基本参数
+        $scope.paginationConf = {
+            currentPage: 1,
+            itemsPerPage: 3
+        };
 
+        //分页 列表
+        $scope.list = function () {
+            var paginationConf = {
+                currentPage: $scope.paginationConf.currentPage,
+                itemsPerPage: $scope.paginationConf.itemsPerPage,
+                name: $scope.fileSearchName ? $scope.fileSearchName : ''
+            };
+            fileService.query(paginationConf, function (res) {
+                if (res.type == 1) {
+                    $scope.files = res.rows;
+                    $scope.paginationConf.totalItems = res.pages.countItems;
+                } else {
+                    jsUtil.alert(res.message);
+                }
+            }, function (err) {
+                jsUtil.alert('查询失败');
+            });
+        };
 
+        /***************************************************************
+         当页码和页面记录数发生变化时监控后台查询   页面ng-init 就不需要 注册 list() 方法  否则会调两次后台
+         如果把currentPage和itemsPerPage分开监控的话则会触发两次后台事件。
+         ***************************************************************/
+        $scope.$watch('paginationConf.currentPage + paginationConf.itemsPerPage', $scope.list);
+
+        $scope.del = function (id) {
+            fileService.delete({fileId: id}, function (response) {
+                if (response.type == 1) {
+                    $location.path('/file/list');
+                }
+                jsUtil.alert(response.message);
+            }, function (error) {
+                jsUtil.alert('删除失败')
+            })
+        }
 
     }]);

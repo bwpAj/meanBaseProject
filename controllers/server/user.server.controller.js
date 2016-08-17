@@ -146,9 +146,10 @@ exports.logout = function (req, res, next) {
 exports.list = function (req, res) {
     console.log(req.method + '======user controller list ======' + new Date());
     var condition = {};
-    if (req.Roles && req.Roles.indexOf('admin') < 0) {
+    //用户权限
+    /*if (req.Roles && req.Roles.indexOf('admin') < 0) {
         condition.author = req.session.user._id;
-    }
+    }*/
 
     //分页查询参数 暂时根据用户名 姓名模糊匹配查询
     //{'$or':[{'username':new RegExp('test')}
