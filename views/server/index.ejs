@@ -83,7 +83,7 @@
             <ul>
                 <% if(User) {  var avatar = gravatar.url(User.email, {s: '40', r: 'x', d: 'retro'}, true) %>
                 <li class="profile-photo">
-                    <!--<img src="<%= avatar %>" alt="" class="img-circle"/>-->
+                    <img src="<%=User.file?User.file .url :'' %>" alt="" class="img-circle" style="width: 40px;height: 40px;"/>
                 </li>
                 <li class="dropdown settings">
                     <a href="" class="dropdown-toggle" data-toggle="dropdown"><%= User.name %>
@@ -103,7 +103,7 @@
         <div id="leftside-navigation" class="nano">
             <ul class="nano-content">
                 <li class="<%= Path === 'index' ? 'active' : '' %>">
-                    <a href="<%= adminDir %>"><i class="fa fa-dashboard"></i><span>首页</span></a>
+                    <a href="#!/index"><i class="fa fa-dashboard"></i><span>首页</span></a>
                 </li>
 
                 <% if(User && Roles.indexOf('admin') > -1 || Actions.indexOf('COMMENT_INDEX') > -1 ) { %>

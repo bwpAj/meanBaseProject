@@ -12,13 +12,6 @@ mainApplicationModule
     .controller('MeController', ['$scope', '$routeParams', '$location', 'Me', 'baseService', '$rootScope', '$timeout', 'fileReader',
         function ($scope, $routeParams, $location, Me, baseService, $rootScope, $timeout, fileReader) {
 
-
-            $scope.disbledFlag = true; //按钮disabled
-            //trigger input file
-            $scope.triggerImgFile = function () {
-                $("#userFile").click();
-                $scope.disbledFlag = true;
-            };
             //input file onchange
             $scope.getImgFileChange = function (obj) {
                 //方式二
@@ -28,23 +21,22 @@ mainApplicationModule
                 }, 100);
                 //方式二
                 /*setTimeout(function(){
-                 $scope.$apply(function(){
-                 $scope.fileSrc = $rootScope.getObjPath(obj);
-                 $scope.disbledFlag = false;
-                 })
+                     $scope.$apply(function(){
+                     $scope.fileSrc = $rootScope.getObjPath(obj);
+                     $scope.disbledFlag = false;
+                     })
                  },100);*/
             };
 
             $scope.find = function () {
                 var userMe = Me.get(function (res) {
-                    //console.log(res); res == userMe
                     $scope.userMe = userMe;
+                    $scope.fileSrc = userMe.user.file ? userMe.user.file.url :'';
                 });
             };
 
             $scope.findOne = function () {
                 var user = Me.findOne(function (res) {
-                    //console.log(res); res == userMe
                     $scope.user = user;
                 });
             };
@@ -96,9 +88,28 @@ mainApplicationModule
                 })
             };
 
-            $scope.upImage = function () {
+            $scope.disbledFlag = true; //按钮disabled
+            //trigger input file
+            $scope.triggerImgFile = function () {
+                $("#userFile").click();
+                $scope.disbledFlag = true;
+            };
 
-            }
+            $scope.sendImg = function () {
+                var file = document.querySelector('input[type=file]').files[0];
+                baseService.uploadUsingHttp('/admin/me/updateHeadImg',file,function(response){
+                    if(response.type == 1){
+                        $timeout(function(){
+                            $scope.fileSrc = response.url;
+                            $scope.disbledFlag = true;
+                        },100);
+                    }
+                    jsUtil.alert(response.message);
+                },function(err){
+                    jsUtil.alert('设置失败');
+                })
+            };
+
         }
     ])
 

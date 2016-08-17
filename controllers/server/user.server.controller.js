@@ -53,7 +53,7 @@ exports.login = function (req, res, next) {
         var password = req.body.password;
         User.findOne({
             username: username
-        }).populate('roles').exec(function (err, user) {
+        }).populate('roles').populate('file').exec(function (err, user) {
             if (!user) {
                 return res.render('info', {
                     message: '登录失败，查无此人'

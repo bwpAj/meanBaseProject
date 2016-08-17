@@ -53,7 +53,8 @@ mainApplicationModule.config(['$locationProvider','$routeProvider',
                 controller:'fileController'
             })
             .otherwise({
-                redirectTo:'client/index.html'
+                templateUrl:'../client/index.html',
+                controller:'MeController'
             })
     }
 ]);
