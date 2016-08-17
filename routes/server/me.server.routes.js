@@ -21,6 +21,7 @@ router.use(function(req, res, next){
 router.route('/').get(me.init);
 router.route('/edit').all(me.edit);
 router.route('/updatepwd').all(me.updatePassword);
+router.route('/updateHeadImg').all(me.updateHeadImg);
 
 module.exports = function(app){
    var path = core.translateAdminDir('/me');

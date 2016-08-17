@@ -22,6 +22,7 @@ mainApplicationModule
                     method: 'PUT',
                     url: '/admin/me/updatepwd'
                 }
+
                 /*query:{
                  method: 'GET',
                  isArray: false
@@ -162,10 +163,7 @@ mainApplicationModule
                         //file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
                     });
                 }
-
-
             };
-
             return baseService;
         }
     ])
