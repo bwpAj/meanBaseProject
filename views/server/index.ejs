@@ -83,7 +83,7 @@
             <ul>
                 <% if(User) {  var avatar = gravatar.url(User.email, {s: '40', r: 'x', d: 'retro'}, true) %>
                 <li class="profile-photo">
-                    <img src="<%=User.file.url %>" alt="" class="img-circle" style="width: 40px;height: 40px;"/>
+                    <img src="<%=User.file?User.file .url :'' %>" alt="" class="img-circle" style="width: 40px;height: 40px;"/>
                 </li>
                 <li class="dropdown settings">
                     <a href="" class="dropdown-toggle" data-toggle="dropdown"><%= User.name %>
