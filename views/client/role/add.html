@@ -1,0 +1,29 @@
+<!--Created by beiwp on 2016/8/19.-->
+<section ng-init="getRoleActions()">
+    <div class="row">
+        <div class="col-md-12">
+            <form>
+                <div class="form-group"><label for="">角色名</label><input type="text" class="form-control"  ng-model="role.name" /></div>
+                <div class="form-group"><label for="">权限</label>
+                    <h4>选择权限</h4>
+                    <div ng-repeat="action in actions">
+                        <h5>{{action.name}}</h5>
+                        <ul class="list-group">
+                            <li class="list-group-item" ng-repeat="itemAction in action.actions">
+                                <label for="">
+                                    <input type="checkbox"  ng-model="itemAction.isCheck" ng-checked="itemAction.isCheck"/>{{itemAction.name}}({{itemAction.description}})
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="">描述</label>
+                    <textarea name="description" id="" cols="30" rows="8" ng-model="role.description"  class="form-control"></textarea>
+                </div>
+                <button class="btn btn-primary" ng-click="addRole()">提交</button>
+            </form>
+        </div>
+    </div>
+</section>
+    

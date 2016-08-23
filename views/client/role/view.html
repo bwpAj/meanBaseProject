@@ -1,0 +1,17 @@
+<section ng-init="viewRole()">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="lists">
+                <p>名称：{{role.name}}</p>
+
+                <p>创建人：{{role.author?role.author.username:'无'}}</p>
+
+                <p>权限：<span ng-repeat="action in role.actions">{{action+",  "}}</span></p>
+
+                <p>日期：{{role.created}}</p>
+
+                <p>描述：{{role.description}}</p>
+            </div>
+        </div>
+    </div>
+</section>

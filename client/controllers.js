@@ -21,17 +21,17 @@ mainApplicationModule
                 }, 100);
                 //方式二
                 /*setTimeout(function(){
-                     $scope.$apply(function(){
-                     $scope.fileSrc = $rootScope.getObjPath(obj);
-                     $scope.disbledFlag = false;
-                     })
+                 $scope.$apply(function(){
+                 $scope.fileSrc = $rootScope.getObjPath(obj);
+                 $scope.disbledFlag = false;
+                 })
                  },100);*/
             };
 
             $scope.find = function () {
                 var userMe = Me.get(function (res) {
                     $scope.userMe = userMe;
-                    $scope.fileSrc = userMe.user.file ? userMe.user.file.url :'';
+                    $scope.fileSrc = userMe.user.file ? userMe.user.file.url : '';
                 });
             };
 
@@ -97,15 +97,15 @@ mainApplicationModule
 
             $scope.sendImg = function () {
                 var file = document.querySelector('input[type=file]').files[0];
-                baseService.uploadUsingHttp('/admin/me/updateHeadImg',file,function(response){
-                    if(response.type == 1){
-                        $timeout(function(){
+                baseService.uploadUsingHttp('/admin/me/updateHeadImg', file, function (response) {
+                    if (response.type == 1) {
+                        $timeout(function () {
                             $scope.fileSrc = response.url;
                             $scope.disbledFlag = true;
-                        },100);
+                        }, 100);
                     }
                     jsUtil.alert(response.message);
-                },function(err){
+                }, function (err) {
                     jsUtil.alert('设置失败');
                 })
             };
@@ -325,4 +325,142 @@ mainApplicationModule
             })
         }
 
-    }]);
+    }])
+
+    .controller('roleController', ['$scope', 'roleService', '$routeParams', '$location', function ($scope, roleService, $routeParams, $location) {
+
+        // 过滤权限数组
+        var filterActions = function (data,checkData) {
+            var targetArr = [];
+            angular.forEach(data, function (obj, index) {
+                if (obj.actions) {
+                    angular.forEach(obj.actions, function (elt, ind) {
+                        //新增编辑提交时获取页面勾选值
+                        if (elt.isCheck && !checkData) {
+                            targetArr.push(elt.value);
+                        }
+
+                        //初始化页面时勾选对应的值
+                        if (checkData && checkData.length > 0) {
+                            angular.forEach(checkData,function(obx,inj){
+                                if(elt.value == obx){
+                                    elt.isCheck = true;
+                                }
+                            })
+                        }
+
+                    })
+                }
+            });
+            if(checkData){
+                return data;
+            }else{
+                return targetArr;
+            }
+
+        };
+
+        //获取 角色列表
+        $scope.getRoleActions = function () {
+            roleService.getRoleActions(function (res) {
+                $scope.actions = res;
+            }, function (err) {
+                jsUtil.alert('请求失败')
+            })
+        };
+
+        //新增
+        $scope.addRole = function () {
+            $scope.role.actions = filterActions($scope.actions);
+            var role = new roleService($scope.role);
+            role.$save(function (res) {
+                jsUtil.alert(res.message);
+                if (res.type == 1) {//添加成功
+                    $location.path('/role/list');
+                }
+            }, function (err) {
+                jsUtil.alert('系统异常');
+            });
+        };
+
+        //删除
+        $scope.delRole = function (id) {
+            roleService.delete({roleId: id},
+                function (res) {
+                    jsUtil.alert(res.message);
+                    if (res.type == 1) {
+                        $location.path('/role/list');
+                    }
+                }, function (err) {
+                    jsUtil.alert('系统异常');
+                }
+            );
+        };
+
+        //修改
+        $scope.updateRole = function () {
+            $scope.role.actions = filterActions($scope.actions);
+            var role = new roleService($scope.role);
+            role.$update(function (res) {
+                jsUtil.alert(res.message);
+                if (res.type == 1) {
+                    $location.path('/role/list');
+                }
+            }, function (err) {
+                jsUtil.alert('更新失败');
+            });
+        };
+
+        //配置分页基本参数
+        $scope.paginationConf = {
+            currentPage: 1,
+            itemsPerPage: 5
+        };
+
+        //分页 列表
+        $scope.listRole = function () {
+            var paginationConf = {
+                currentPage: $scope.paginationConf.currentPage,
+                itemsPerPage: $scope.paginationConf.itemsPerPage,
+                name: $scope.role ? $scope.role.name : ''
+            };
+            roleService.query(paginationConf, function (res) {
+                if (res.type == 1) {
+                    $scope.roles = res.rows;
+                    $scope.paginationConf.totalItems = res.pages.countItems;
+                } else {
+                    jsUtil.alert(res.message);
+                }
+            }, function (err) {
+                jsUtil.alert('查询失败');
+            });
+        };
+
+        /***************************************************************
+         当页码和页面记录数发生变化时监控后台查询   页面ng-init 就不需要 注册 list() 方法  否则会调两次后台
+         如果把currentPage和itemsPerPage分开监控的话则会触发两次后台事件。
+         ***************************************************************/
+        $scope.$watch('paginationConf.currentPage + paginationConf.itemsPerPage', $scope.listRole);
+
+        //查看
+        $scope.viewRole = function () {
+            roleService.get({
+                roleId: $routeParams.roleId
+            }, function (res) {
+                if (res.type != 1) {
+                    jsUtil.alert(res.message);
+                    $location.path('/role/list');
+                } else {
+                    $scope.role = res.data;
+                    $scope.actions = filterActions($scope.actions,res.data.actions);
+
+                }
+            }, function (err) {
+                jsUtil.alert('获取失败');
+                $location.path('/role/list');
+            });
+        };
+
+    }])
+
+;

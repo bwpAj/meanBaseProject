@@ -52,6 +52,24 @@ mainApplicationModule.config(['$locationProvider','$routeProvider',
                 templateUrl: '../client/file/add.html',
                 controller:'fileController'
             })
+
+            .when('/role/list',{
+                templateUrl: '../client/role/list.html',
+                controller: 'roleController'
+            })
+            .when('/role/add',{
+                templateUrl: '../client/role/add.html',
+                controller: 'roleController'
+            })
+            .when('/role/:roleId/view',{
+                templateUrl: '../client/role/view.html',
+                controller: 'roleController'
+            })
+            .when('/role/:roleId/edit',{
+                templateUrl: '../client/role/edit.html',
+                controller: 'roleController'
+            })
+
             .otherwise({
                 templateUrl:'../client/index.html',
                 controller:'MeController'
