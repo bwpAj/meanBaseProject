@@ -9,14 +9,12 @@ router.use(function(req,res,next){
     next();
 });
 
+// 不能放到权限判断下面 会有重定向的
 router.route('/login').all(users.checkUser,users.login);
 router.route('/register').all(users.register);
 router.route('/logout').all(users.logout);
-
 router.route('/list').get(users.list).post(users.add);
 router.route('/list/:id').get(users.one).put(users.edit).delete(users.del);
-router.route('/list/:id/del').all(users.del);
-
 
 //权限判断
 router.use(function(req,res,next){
@@ -26,7 +24,6 @@ router.use(function(req,res,next){
     }
     next();
 });
-
 
 module.exports = function(app){
     var path = core.translateAdminDir('/user');

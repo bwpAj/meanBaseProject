@@ -3,10 +3,10 @@
  */
 'use strict';
 
-var express = require('express');
-var router = express.Router();
-var core = require('../../libs/core');
-var me = require('../../controllers/server/me.server.controller');
+var express = require('express'),
+    router = express.Router(),
+    core = require('../../libs/core'),
+    me = require('../../controllers/server/me.server.controller');
 
 router.use(function(req, res, next){
     console.log('管理员信息：'+ new Date());
