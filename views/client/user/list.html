@@ -9,7 +9,7 @@
                         <div class="col-sm-2"><input type="text"  ng-model="user.name" class="form-control" placeholder="姓名" /></div>
                         <!--<div class="col-sm-2"><input type="text"  ng-model="user.author.username" class="form-control" placeholder="创建人" /></div>-->
                         <!--<div class="col-sm-2"><input type="text"  ng-model="user.created"  class="form-control "  placeholder="创建时间" /></div>-->
-                        <button type="button" ng-click="list()" class="btn btn-primary"> 搜索 </button>
+                        <button type="button" ng-click="listUser()" class="btn btn-primary"> 搜索 </button>
                     </div>
                 </div>
                 <div class="panel panel-primary">
@@ -46,7 +46,7 @@
                             </td>
                             <td>
                                 <a href="#!/user/{{user._id}}/edit" class="btn btn-default btn-xs">编辑</a>
-                                <a ng-click="del(user._id)"  ng-if="user.status !== 101" class="btn btn-danger btn-xs J_del" >删除</a>
+                                <a ng-click="delUser(user._id)"  ng-if="user.status !== 101" class="btn btn-danger btn-xs J_del" >删除</a>
                             </td>
                         </tr>
                         </tbody>

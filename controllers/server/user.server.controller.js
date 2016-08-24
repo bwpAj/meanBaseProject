@@ -1,19 +1,21 @@
 /**
- * Created by beiwp on 2016/5/25.
+ * Created by beiwp on 2016/8/24.
  */
+'use strict';
 
-var mongoose = require('mongoose');
-var Role = mongoose.model('Role');
-var User = mongoose.model('User');
-var core = require('../../libs/core');
-var config = require('../../config');
-var _ = require('underscore');
+var mongoose = require('mongoose'),
+    User = mongoose.model('User'),
+    Role = mongoose.model('Role'),
+    core = require('../../libs/core'),
+    config = require('../../config'),
+    _ = require('underscore');
 
 var noRedirect = [
     'user/login',
     'user/forget',
     'user/register'
 ];
+
 
 /**
  * 项目初始化检验 用户数据为空时 先进入管理注册页面
@@ -114,7 +116,6 @@ exports.register = function (req, res, next) {
         });
 
     }
-    ;
 };
 
 /**
@@ -138,18 +139,175 @@ exports.logout = function (req, res, next) {
     }
 };
 
+
 /**
- * 列表
+ * 删除对象 User beiwp on 2016/8/24
+ */
+var funDelUser = function (obj, res, mess) {
+    obj.remove(function (err) {
+        if (err) {
+            return core.resJson(res, {type: 0, message: core.getErrorMessage(err)});
+        }
+        core.resJson(res, {type: 1, message: '删除成功'});
+    });
+};
+
+/**
+ * 新增更新对象 User beiwp on 2016/8/24
+ */
+var funEditUser = function (obj, res, mess) {
+    obj.save(function (err, result) {
+        if (err || !result) {
+            return core.resJson(res, {type: 0, message: core.getErrorMessage(err)});
+        }
+        core.resJson(res, {type: 1, message: mess + '成功'});
+    });
+};
+
+
+/**
+ * 新增 User beiwp on 2016/8/24
  * @param req
  * @param res
  */
-exports.list = function (req, res) {
-    console.log(req.method + '======user controller list ======' + new Date());
+exports.addUser = function (req, res) {
+    console.log(req.method + '======User controller addUser ======' + new Date());
+
+    var obj = req.body;
+    if (obj) {
+        Role.findOne({status: 202}, function (err, role) {
+            if (err || !role) {
+                core.resJson(res, {type: 0, message: '未开放角色'})
+            }
+            obj.roles = [role._id];
+            if (req.session.user) {
+                obj.author = req.session.user._id;
+            }
+            /*唯一性验证*/
+            User.count({username: obj.username}, function (err, count) {
+                if (count > 0) {
+                    return core.resJson(res, {type: 0, message: '用户名已存在'})
+                } else {
+                    /*唯一性验证*/
+                    User.count({email: obj.email}, function (err, count) {
+                        if (count > 0) {
+                            return core.resJson(res, {type: 0, message: '邮箱已存在'})
+                        } else {
+                            var user = new User(obj);
+                            funEditUser(user, res, '新增');
+                        }
+                    });
+                }
+            });
+        });
+
+    }
+};
+
+/**
+ * 删除 User beiwp on 2016/8/24
+ * @param req
+ * @param res
+ */
+exports.delUser = function (req, res) {
+    console.log(req.method + '======User controller delUser ======' + new Date());
+
+    var id = req.params.id;//获取参数
+    if (id) {
+        User.findById(id).populate('author').exec(function (err, result) {
+            if (err) {
+                return core.resJson(res, {type: 0, message: core.getErrorMessage(err)});
+            }
+            if (!result) {
+                return core.resJson(res, {type: 0, message: '查询对象不存在'});
+            }
+
+            // 权限判断
+            var isAdmin = req.Roles && req.Roles.indexOf('admin') > -1;
+            var isAuthor = result.author && ((result.author._id + '') === req.session.user._id);
+            if (!(isAdmin && isAuthor)) {
+                return core.resJson(res, {type: 0, message: '没有权限'});
+            }
+            if (result.status === 101) {
+                return core.resJson(res, {type: 0, message: '不能删除系统默认管理员'})
+            }
+
+            funDelUser(result, res);
+
+        });
+    } else {
+        core.resJson(res, {type: 0, message: '参数获取失败'});
+    }
+
+};
+
+
+/**
+ * 修改 User beiwp on 2016/8/24
+ * @param req
+ * @param res
+ */
+exports.editUser = function (req, res) {
+    console.log(req.method + '======User controller editUser ======' + new Date());
+
+    var id = req.params.id;//获取参数
+    var obj = req.body; //获取对象
+
+    if (id && obj) {
+        User.findById(id).populate('author').exec(function (err, result) {
+            if (err) {
+                return core.resJson(res, {type: 0, message: core.getErrorMessage(err)});
+            }
+            if (!result) {
+                return core.resJson(res, {type: 0, message: '查询对象不存在'});
+            }
+
+            // 权限判断
+            var isAdmin = req.Roles && req.Roles.indexOf('admin') > -1;
+            var isAuthor = result.author && ((result.author._id + '') === req.session.user._id);
+            if (!(isAdmin && isAuthor)) {
+                return core.resJson(res, {type: 0, message: '没有权限'});
+            }
+
+            var query;
+            if (typeof obj.roles === 'string') {
+                query = Role.find({_id: obj.roles});
+            } else if (typeof obj.roles === 'object') {
+                query = Role.find({_id: {$in: obj.roles}});                //查询 age等于20或21或21或’haha’的文档
+            }
+            if (!query) {
+                return core.resJson(res, {type: 0, message: '请选择一个角色'})
+            }
+            query.exec(function (err, roles) {
+                if (result.status === 101) {
+                    var statuses = _.pluck(roles, 'status'); //在roles对象中 返回 status字段值的一个数组
+                    if (statuses.indexOf(201) === -1) {
+                        return core.resJson(res, {type: 0, message: '系统管理员角色不正确'});
+                    }
+                }
+                obj.roles = roles;
+
+                _.extend(result, obj);
+
+                funEditUser(result, res, '修改');
+            });
+
+
+
+        });
+    } else {
+        core.resJson(res, {type: 0, message: '参数获取失败'});
+    }
+};
+
+/**
+ * 列表 User beiwp on 2016/8/24
+ * @param req
+ * @param res
+ */
+exports.listUser = function (req, res) {
+    console.log(req.method + '======User controller list ======' + new Date());
     var condition = {};
-    //用户权限
-    /*if (req.Roles && req.Roles.indexOf('admin') < 0) {
-        condition.author = req.session.user._id;
-    }*/
 
     //分页查询参数 暂时根据用户名 姓名模糊匹配查询
     //{'$or':[{'username':new RegExp('test')}
@@ -162,16 +320,17 @@ exports.list = function (req, res) {
     if (nameParams) {
         condition.name = new RegExp(nameParams);
     }
+
     User.count(condition, function (err, total) {
-        console.log("总数==" + total);
+        console.log("User总数==" + total);
         if (err) {
-            return core.resJson(res, {type: 0, message: '查询失败'});
+            return core.resJson(res, {type: 0, message: core.getErrorMessage(err)});
         }
         var query = User.find(condition).populate('author').populate('roles');
         //分页
         var pageInfo = core.createPage(req, total, 10);
         pageInfo.countItems = total;
-        console.log('============分页参数============');
+        console.log('User============分页参数============');
         console.log(pageInfo);
         query.skip(pageInfo.start);
         query.limit(pageInfo.pageSize);
@@ -190,186 +349,50 @@ exports.list = function (req, res) {
 };
 
 /**
- * 查看
+ * 查看  User beiwp on 2016/8/24
  * @param req
  * @param res
  */
-exports.one = function (req, res) {
-    console.log(req.method + '======user controller one ======' + new Date());
-    var id = req.params.id;
-    User.findById(id).populate('author').exec(function (err, user) {
-        if (err || !user) {
-            return core.resJson(res, {type: 0, message: '查询出错'});
-        }
-
-        var isAdmin = req.Roles && req.Roles.indexOf('admin') > -1;
-        var isAuthor = user.author && (( user.author._id + '' ) === req.session.user._id);
-        if (!( isAdmin && isAuthor)) {
-            return core.resJson(res, {type: 0, message: '没有权限'})
-        }
-
-        try {
-            var condition = {};
-            if (req.Roles.indexOf('admin') < 0) {
-                condition.author = req.session.user._id;
-            }
-            Role.find(condition, function (err, roles) {
-                if (!err && roles) {
-                    var obj = {user: user, roles: roles};
-                    console.log(obj);
-                    core.resJson(res, {type: 1, data: obj});
-                }
-            })
-        } catch (e) {
-            core.resJson(res, user);
-        }
-
-    });
-
-};
-
-/**
- * 删除
- * @param req
- * @param res
- */
-exports.del = function (req, res) {
-    console.log(req.method + '======user controller del ======' + new Date());
-    var delHandle = function (user) {
-        user.remove(function (err) {
-            if (err) {
-                core.resJson(res, {type: 0, message: '删除失败'});
-            }
-            if (id === req.session.user._id) {
-                req.session.destroy(); //注销用户信息
-                res.locals.User = null;
-                var path = core.translateAdminDir('/user/login');
-                return res.redirect(path);
-            }
-
-            core.resJson(res, {type: 1, message: '删除成功'});
-        })
-    };
+exports.viewUser = function (req, res) {
+    console.log(req.method + '======User controller viewUser ======' + new Date());
 
     var id = req.params.id;//获取参数
-    User.findById(id).populate('roles').populate('author').exec(function (err, result) {
-        if (err) {
-            return core.resJson(res, {type: 0, message: core.getErrorMessage(err)});
-        }
-        if (!result) {
-            return core.resJson(res, {type: 0, message: '用户不存在'});
-        }
-
-        var isAdmin = req.Roles && req.Roles.indexOf('admin') > -1;
-        var isAuthor = result.author && ((result.author._id + '') === req.session.user._id);
-
-        if (!(isAdmin && isAuthor)) {
-            return core.resJson(res, {type: 0, message: '没有权限'});
-        }
-        if (result.status === 101) {
-            return core.resJson(res, {type: 0, message: '不能删除系统默认管理员'})
-        }
-        delHandle(result);
-    })
-};
-
-/**
- * 新增
- * @param req
- * @param res
- */
-exports.add = function (req, res) {
-    console.log(req.method + '======user controller add ======' + new Date());
-
-    var obj = req.body;
-    Role.findOne({status: 202}, function (err, role) {
-        if (err || !role) {
-            core.resJson(res, {type: 0, message: '未开放角色'})
-        }
-        obj.roles = [role._id];
-        if (req.session.user) {
-            obj.author = req.session.user._id;
-        }
-        /*唯一性验证*/
-        User.count({username: obj.username}, function (err, count) {
-            if (count > 0) {
-                return core.resJson(res, {type: 0, message: '用户名已存在'})
-            } else {
-                /*唯一性验证*/
-                User.count({email: obj.email}, function (err, count) {
-                    if (count > 0) {
-                        return core.resJson(res, {type: 0, message: '邮箱已存在'})
-                    } else {
-                        var user = new User(obj);
-                        user.save(function (err, result) {
-                            if (err) {
-                                console.log(core.getErrorMessage(err));
-                                return core.resJson(res, {type: 0, message: '添加失败'});
-                            }
-                            core.resJson(res, {type: 1, message: '添加成功'});
-                        });
-                    }
-                });
+    if (id) {
+        User.findById(id).populate('author').exec(function (err, result) {
+            if (err) {
+                return core.resJson(res, {type: 0, message: core.getErrorMessage(err)});
             }
-        });
-    });
-
-};
-
-/**
- * 修改
- * @param req
- * @param res
- */
-exports.edit = function (req, res) {
-    console.log(req.method + '======user controller edit ======' + new Date());
-
-    var id = req.params.id;
-    var editHandler = function (user) {
-        user.save(function (err, user) {
-            if (err || !user) {
-                return core.resJson(res, {type: 0, message: '更新失败'});
+            if (!result) {
+                return core.resJson(res, {type: 0, message: '查询对象不存在'});
             }
-            if (id === req.session.user._id) {
-                req.session.user = user;
-                res.locals.User = user;
+
+            //权限判断
+            var isAdmin = req.Roles && req.Roles.indexOf('admin') > -1;
+            var isAuthor = result.author && (( result.author._id + '' ) === req.session.user._id);
+            if (!( isAdmin && isAuthor)) {
+                return core.resJson(res, {type: 0, message: '没有权限'})
             }
-            core.resJson(res, {type: 1, message: '更新成功'});
-        });
-    };
 
-    var obj = req.body;
-    User.findById(id).populate('roles').populate('author').exec(function (err, result) {
-        if (err || !result) {
-            return core.resJson(res, {type: 0, message: '查询失败'});
-        }
-
-        /*权限判断*/
-        var isAdmin = req.Roles && req.Roles.indexOf('admin') > -1;
-        var isAuthor = result.author && (( result.author._id + '' ) === req.session.user._id );
-        if (!( isAuthor && isAdmin)) {
-            return core.resJson(res, {type: 0, message: '没有权限'})
-        }
-
-        var query;
-        if (typeof obj.roles === 'string') {
-            query = Role.find({_id: obj.roles});
-        } else if (typeof obj.roles === 'object') {
-            query = Role.find({_id: {$in: obj.roles}});                //查询 age等于20或21或21或’haha’的文档
-        }
-        if (!query) {
-            return core.resJson(res, {type: 0, message: '请选择一个角色'})
-        }
-        query.exec(function (err, roles) {
-            if (result.status === 101) {
-                var statuses = _.pluck(roles, 'status'); //在roles对象中 返回 status字段值的一个数组
-                if (statuses.indexOf(201) === -1) {
-                    return core.resJson(res, {type: 0, message: '系统管理员角色不正确'});
+            try {
+                var condition = {};
+                if (req.Roles.indexOf('admin') < 0) {
+                    condition.author = req.session.user._id;
                 }
+                Role.find(condition, function (err, roles) {
+                    if (!err && roles) {
+                        var obj = {user: result, roles: roles};
+                        core.resJson(res, {type: 1, data: obj});
+                    }
+                })
+            } catch (e) {
+                core.resJson(res, result);
             }
-            obj.roles = roles;
-            _.extend(result, obj);
-            editHandler(result);
+
+            //core.resJson(res, result);
         });
-    });
+    } else {
+        core.resJson(res, {type: 0, message: '参数获取失败'});
+    }
+
 };
+
