@@ -28,6 +28,7 @@ mainApplicationModule.config(['$locationProvider','$routeProvider',
                 templateUrl: '../client/me/edit.html',
                 controller: 'MeController'
             })
+            
             .when('/user/list',{
                 templateUrl: '../client/user/list.html',
                 controller: 'userController'
@@ -44,13 +45,14 @@ mainApplicationModule.config(['$locationProvider','$routeProvider',
                 templateUrl: '../client/user/edit.html',
                 controller: 'userController'
             })
-            .when('/file/list/',{
+
+            .when('/file/list',{
                 templateUrl: '../client/file/list.html',
-                controller:'fileController'
+                controller: 'fileController'
             })
             .when('/file/add',{
                 templateUrl: '../client/file/add.html',
-                controller:'fileController'
+                controller: 'fileController'
             })
 
             .when('/role/list',{
