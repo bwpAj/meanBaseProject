@@ -11,7 +11,7 @@ var mongoose = require('mongoose'),
     Comment = mongoose.model('Comment'),
     File = mongoose.model('File'),
     core = require('../../libs/core'),
-    config = require('../../config');
+    config = require('../../config/config');
 
 /**
  * 新增 Index beiwp on 2016/8/22
@@ -46,7 +46,8 @@ exports.index = function (req, res) {
         }).then(function (result) {
             obj.file = result;
             console.log(obj);
-            res.render('server/index', {data: obj});
+            console.log("token==99-====" + res.locals.token);
+            res.render('server/index', {data: obj, token: res.locals.token});
         });
 
     } else {

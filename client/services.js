@@ -217,4 +217,18 @@ mainApplicationModule
             return baseService;
         }
     ])
+
+    .service('authentication', ['$window', function ($window) {
+        var saveToken = function (token) {
+            $window.localStorage['read-token'] = token;
+        };
+        var getToken = function () {
+            console.log(888);
+            return $window.localStorage['read-token'];
+        };
+        return {
+            saveToken: saveToken,
+            getToken: getToken
+        };
+    }])
 ;

@@ -8,7 +8,7 @@
  */
 var config = require('./config');
 var mongoose = require('mongoose');
-var core = require('./libs/core');
+var core = require('./../libs/core');
 var appPath = process.cwd();
 
 module.exports = function(){

@@ -5,8 +5,8 @@
 var mongoose = require('mongoose'),
     Role = mongoose.model('Role'),
     core = require('../../libs/core'),
-    config = require('../../config'),
-    actions = require('../../actions'),
+    config = require('../../config/config'),
+    actions = require('../../config/actions'),
     _ = require('underscore');
 
 

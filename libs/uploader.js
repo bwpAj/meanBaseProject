@@ -16,7 +16,7 @@
  */
 
 var _ = require('underscore');
-var config = require('../config');
+var config = require('../config/config');
 
 module.exports = function (opts) {
     var path = require('path'),
