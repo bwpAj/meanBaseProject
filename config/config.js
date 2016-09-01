@@ -7,6 +7,7 @@ var appPath = process.cwd();
 var config = {
     port: 7000,
     env: 'development',
+    jwtSecret:'ReadingClubSecret',
     mongodb: {
         uri: 'mongodb://localhost:/interface',
         options:{}

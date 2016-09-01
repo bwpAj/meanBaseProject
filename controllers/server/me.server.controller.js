@@ -9,9 +9,9 @@ var Role = mongoose.model('Role');
 var File = mongoose.model('File');
 var userController = require('./user.server.controller');
 var _ = require('underscore');
-var config = require('../../config');
+var config = require('../../config/config');
 var core = require('../../libs/core');
-var ACTIONS = require('../../actions');
+var ACTIONS = require('../../config/actions');
 var uploader = require('../../libs/uploader')(config.upload);
 
 

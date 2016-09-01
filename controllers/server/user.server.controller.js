@@ -7,8 +7,10 @@ var mongoose = require('mongoose'),
     User = mongoose.model('User'),
     Role = mongoose.model('Role'),
     core = require('../../libs/core'),
-    config = require('../../config'),
-    _ = require('underscore');
+    config = require('../../config/config'),
+    _ = require('underscore'),
+    passport = require('passport'),
+    filterAuthor = require('../../libs/filterAuthor');
 
 var noRedirect = [
     'user/login',
@@ -41,28 +43,43 @@ exports.checkUser = function (req, res, next) {
 };
 
 /**
+ * 跳转登录
+ * @param req
+ * @param res
+ */
+
+exports.jumpLogin = function (req, res) {
+    req.session.loinReferer = req.headers.referer;
+    res.render('server/user/login');
+};
+
+
+/**
  * 登录
  * @param req
  * @param res
- * @param next
  */
 exports.login = function (req, res, next) {
-    if (req.method === 'GET') {
-        req.session.loinReferer = req.headers.referer;
-        res.render('server/user/login');
-    } else if (req.method === 'POST') {
-        var username = req.body.username;
-        var password = req.body.password;
-        User.findOne({
-            username: username
-        }).populate('roles').populate('file').exec(function (err, user) {
-            if (!user) {
-                return res.render('info', {
-                    message: '登录失败，查无此人'
-                });
-            }
-            if (user.authenticate(password)) {
+    console.log(req.method + '======User controller login ======' + new Date());
 
+    var username = req.body.username;
+    var password = req.body.password;
+    if (username && password) {
+        passport.authenticate('local', function (err, user, info) {
+            console.log(55);
+            console.log(user);
+            console.log(info);
+            var token;
+            if (err) {
+                res.render('info', {message: core.getErrorMessage(err)});
+            }
+            if (info) {
+                res.render('info', {message: info});
+            }
+            if (user) {
+                token = user.generateJwt();
+                console.log("token==="+token);
+                req.session.token = token;
                 //记录登录信息
                 user.last_login_date = new Date();
                 user.last_login_ip = core.getIp(req);
@@ -81,15 +98,54 @@ exports.login = function (req, res, next) {
                     }
                 }
                 res.redirect(ref);
+
+                //sendJSONresponse(res, 200, {token: token});
             } else {
-                res.render('info', {
-                    message: '密码不正确'
-                });
+                res.render('info', {message: '用户不存在'});
             }
 
+        })(req, res, next);
 
+        /*User.findOne({
+         username: username
+         }).populate('roles').populate('file').exec(function (err, user) {
+         if (!user) {
+         return res.render('info', {
+         message: '登录失败，查无此人'
+         });
+         }
+         if (user.authenticate(password)) {
+
+         //记录登录信息
+         user.last_login_date = new Date();
+         user.last_login_ip = core.getIp(req);
+         user.save();
+         req.session.user = user;
+         console.log('登录成功', new Date());
+         console.log(req.session.user);
+
+         var path = core.translateAdminDir('/');
+         var ref = req.session.loginReferer || path;
+
+         for (var i in noRedirect) {
+         if (ref.indexOf(noRedirect[i]) > -1) {
+         ref = path;
+         break;
+         }
+         }
+         res.redirect(ref);
+         } else {
+         res.render('info', {
+         message: '密码不正确'
+         });
+         }
+         });*/
+    } else {
+        res.render('info', {
+            message: '参数异常'
         });
     }
+
 };
 
 /**
@@ -99,6 +155,8 @@ exports.login = function (req, res, next) {
  * @param next
  */
 exports.register = function (req, res, next) {
+    console.log(req.method + '======User controller register ======' + new Date());
+
     var method = req.method;
     if (method === 'GET') {
         res.render('server/user/register', {})
@@ -293,7 +351,6 @@ exports.editUser = function (req, res) {
             });
 
 
-
         });
     } else {
         core.resJson(res, {type: 0, message: '参数获取失败'});
@@ -305,8 +362,13 @@ exports.editUser = function (req, res) {
  * @param req
  * @param res
  */
-exports.listUser = function (req, res) {
+exports.listUser = function (req, res,next) {
+
     console.log(req.method + '======User controller list ======' + new Date());
+
+    filterAuthor(req, res,next);
+
+
     var condition = {};
 
     //分页查询参数 暂时根据用户名 姓名模糊匹配查询

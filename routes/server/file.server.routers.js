@@ -6,7 +6,16 @@
 var express = require('express'),
     router = express.Router(),
     core = require('../../libs/core'),
+    config = require('../../config/config'),
     file = require('../../controllers/server/file.server.controller');
+
+var jwt = require('express-jwt');
+
+var auth = jwt({
+    secret: config.jwtSecret,
+    userProperty: 'userModel'
+});
+
 
 router.use(function (req, res, next) {
     console.log('file routes====' + new Date());
@@ -23,7 +32,7 @@ router.use(function (req, res, next) {
     next();
 });
 
-router.route('/list').get(file.listFile).post(file.addFile);
+router.route('/list').get(auth,file.listFile).post(file.addFile);
 router.route('/list/:id').get(file.viewFile).put(file.editFile).delete(file.delFile);
 
 

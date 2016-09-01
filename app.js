@@ -1,5 +1,5 @@
 var express = require('express');
-var mongoose = require('./mongoose');
+var mongoose = require('./config/mongoose');
 var path = require('path');
 var favicon = require('serve-favicon');
 var gravatar = require('gravatar');
@@ -9,15 +9,19 @@ var bodyParser = require('body-parser');
 var session = require('express-session');
 var RedisStore = require('connect-redis')(session); //存储session 防止重启服务器 session丢失
 var csrf = require('csurf');
-var config = require('./config');
+var config = require('./config/config');
 var core = require('./libs/core');
 var db = mongoose();
 var app = express();
-
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 //全局字段 在页面引用<%=locals.title%>
 //res.locals.title || render('xxx',{title:'xxx'}) 会把这个值给重置了
@@ -45,7 +49,7 @@ app.use(session({
 //app.use(csrf());
 app.use(function(req,res,next){
   res.header('X-Powered-By','bwpInterfaceManager');
-  res.locals.token = '';// req.csrfToken && req.csrfToken();
+  res.locals.token = req.session.token;// req.csrfToken && req.csrfToken();
   if(req.session.user){
       res.locals.User = req.session.user;
       var roles = core.getRoles(req.session.user);
@@ -73,6 +77,8 @@ core.walk(appPath + '/routes', 'maddlewares', function(path){
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'client')));
 app.use(express.static(path.join(__dirname, 'views')));
+
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
