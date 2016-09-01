@@ -6,7 +6,7 @@
 var mongoose = require('mongoose'),
     File = mongoose.model('File'),
     core = require('../../libs/core'),
-    config = require('../../config'),
+    config = require('../../config/config'),
     _ = require('underscore'),
     fs = require('fs'),
     path = require('path'),

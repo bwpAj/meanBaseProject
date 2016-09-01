@@ -5,9 +5,12 @@
  */
 
 var app = require('../app');
+var Passport = require('../config/passport');
 var debug = require('debug')('interface-managerment:server');
 var http = require('http');
 
+
+var passport = Passport();
 /**
  * Get port from environment and store in Express.
  */
@@ -48,6 +51,12 @@ function normalizePort(val) {
 
   return false;
 }
+
+app.use(function(req, res, next) {
+  var err = new Error('UnauthorizedError');
+  err.status = 401;
+  next(err);
+});
 
 /**
  * Event listener for HTTP server "error" event.

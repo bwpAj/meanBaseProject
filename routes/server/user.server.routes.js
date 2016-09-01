@@ -6,7 +6,17 @@
 var express = require('express'),
     router = express.Router(),
     core = require('../../libs/core'),
-    user = require('../../controllers/server/user.server.controller');
+    config = require('../../config/config'),
+    user = require('../../controllers/server/user.server.controller'),
+    passport = require('passport'),
+    jwt = require('express-jwt');
+
+
+var auth = jwt({
+    secret: config.jwtSecret,
+    userProperty: 'userModel'
+});
+
 
 router.use(function (req, res, next) {
     console.log('user routes====' + new Date());
@@ -15,7 +25,7 @@ router.use(function (req, res, next) {
 });
 
 // 不能放到权限判断下面 会有重定向的
-router.route('/login').all(user.checkUser,user.login);
+router.route('/login').get(user.checkUser, user.jumpLogin).post(user.login);
 router.route('/register').all(user.register);
 router.route('/logout').all(user.logout);
 
@@ -28,7 +38,7 @@ router.use(function (req, res, next) {
     next();
 });
 
-router.route('/list').get(user.listUser).post(user.addUser);
+router.route('/list').get(auth,user.listUser).post(auth,user.addUser);
 router.route('/list/:id').get(user.viewUser).put(user.editUser).delete(user.delUser);
 
 
