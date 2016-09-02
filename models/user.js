@@ -38,6 +38,9 @@ var UserSchema = new Schema({
     address: {
         type: String
     },
+    headImg: {
+        type: String
+    },
     roles: [{
         type: Schema.ObjectId,
         ref: 'Role'

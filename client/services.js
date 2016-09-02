@@ -42,6 +42,17 @@ mainApplicationModule
                 },
                 query: {
                     isArray: false
+                },
+                viewMe: {
+                    url: '/admin/user/viewMe'
+                },
+                editMe: {
+                    url: '/admin/user/editMe',
+                    method: 'PUT'
+                },
+                updatePassword: {
+                    url: '/admin/user/updatePassword',
+                    method: 'PUT'
                 }
             })
         }

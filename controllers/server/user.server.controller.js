@@ -6,11 +6,14 @@
 var mongoose = require('mongoose'),
     User = mongoose.model('User'),
     Role = mongoose.model('Role'),
+    _ = require('underscore'),
+    fs = require('fs'),
+    path = require('path'),
+    passport = require('passport'),
     core = require('../../libs/core'),
     config = require('../../config/config'),
-    _ = require('underscore'),
-    passport = require('passport'),
-    filterAuthor = require('../../libs/filterAuthor');
+    ACTIONS = require('../../config/actions'),
+    uploader = require('../../libs/uploader')(config.upload);
 
 var noRedirect = [
     'user/login',
@@ -66,9 +69,6 @@ exports.login = function (req, res, next) {
     var password = req.body.password;
     if (username && password) {
         passport.authenticate('local', function (err, user, info) {
-            console.log(55);
-            console.log(user);
-            console.log(info);
             var token;
             if (err) {
                 res.render('info', {message: core.getErrorMessage(err)});
@@ -78,7 +78,7 @@ exports.login = function (req, res, next) {
             }
             if (user) {
                 token = user.generateJwt();
-                console.log("token==="+token);
+                console.log("token===" + token);
                 req.session.token = token;
                 //记录登录信息
                 user.last_login_date = new Date();
@@ -98,48 +98,12 @@ exports.login = function (req, res, next) {
                     }
                 }
                 res.redirect(ref);
-
-                //sendJSONresponse(res, 200, {token: token});
             } else {
                 res.render('info', {message: '用户不存在'});
             }
 
         })(req, res, next);
 
-        /*User.findOne({
-         username: username
-         }).populate('roles').populate('file').exec(function (err, user) {
-         if (!user) {
-         return res.render('info', {
-         message: '登录失败，查无此人'
-         });
-         }
-         if (user.authenticate(password)) {
-
-         //记录登录信息
-         user.last_login_date = new Date();
-         user.last_login_ip = core.getIp(req);
-         user.save();
-         req.session.user = user;
-         console.log('登录成功', new Date());
-         console.log(req.session.user);
-
-         var path = core.translateAdminDir('/');
-         var ref = req.session.loginReferer || path;
-
-         for (var i in noRedirect) {
-         if (ref.indexOf(noRedirect[i]) > -1) {
-         ref = path;
-         break;
-         }
-         }
-         res.redirect(ref);
-         } else {
-         res.render('info', {
-         message: '密码不正确'
-         });
-         }
-         });*/
     } else {
         res.render('info', {
             message: '参数异常'
@@ -218,7 +182,7 @@ var funEditUser = function (obj, res, mess) {
         if (err || !result) {
             return core.resJson(res, {type: 0, message: core.getErrorMessage(err)});
         }
-        core.resJson(res, {type: 1, message: mess + '成功'});
+        core.resJson(res, {type: 1, message: mess + '成功', data: result});
     });
 };
 
@@ -362,11 +326,11 @@ exports.editUser = function (req, res) {
  * @param req
  * @param res
  */
-exports.listUser = function (req, res,next) {
+exports.listUser = function (req, res, next) {
 
     console.log(req.method + '======User controller list ======' + new Date());
 
-    filterAuthor(req, res,next);
+    //filterAuthor(req, res, next);
 
 
     var condition = {};
@@ -458,3 +422,173 @@ exports.viewUser = function (req, res) {
 
 };
 
+
+/**
+ * 查看登录者信息   beiwp on 2016/8/24
+ * @param req
+ * @param res
+ */
+exports.viewMe = function (req, res) {
+    console.log(req.method + '======User controller viewMe ======' + new Date());
+
+    var id = req.session.user._id;
+    if (id) {
+        User.findById(id).populate('roles').populate('file').populate('author').exec(function (err, user) {
+
+            user._roles = req.Roles;
+            user._actions = req.Actions;
+
+            var actions = [];
+
+            if (req.Roles.indexOf('admin') > -1) {
+                actions = ACTIONS;
+            } else {
+                actions = ACTIONS.filter(function (item) {
+                    var items = item.actions.filter(function (act) {
+                        return req.Actions.indexOf(act.value) > -1;
+                    });
+                    if (items.length > 0) {
+                        return item;
+                    }
+                })
+            }
+
+            var tempUser = {
+                'user': user,
+                'acts': actions
+            };
+            //自定义扩展的属性  no
+            user.acts = actions;
+            user.markModified('acts');//传入anything，表示该属性类型发生变化
+
+            core.resJson(res, tempUser);
+        });
+    } else {
+        core.resJson(res, {type: 0, message: '参数获取失败'});
+    }
+
+};
+
+
+/**
+ * 编辑   beiwp on 2016/9/2
+ * @param req
+ * @param res
+ */
+exports.editMe = function (req, res) {
+    console.log(req.method + '======User controller editMe ======' + new Date());
+
+    var id = req.session.user._id;
+    if (id) {
+        var obj = req.body;
+        User.findById(id).populate('roles').exec(function (err, user) {
+            _.extend(user, _.pick(obj, 'name', 'email', 'mobile', 'gender', 'birthday'));
+            user.save(function (err, result) {
+                if (err || !result) {
+                    return core.resJson(res, {message: '修改失败', type: 0});
+                }
+                req.session.user = result;
+                res.locals.User = user;
+                core.resJson(res, {message: '修改成功', type: 1, user: user});
+            });
+        })
+
+    } else {
+        core.resJson(res, {type: 0, message: '参数获取失败'});
+    }
+};
+
+/**
+ * 更新密码 beiwp on 2016/9/2
+ * @param req
+ * @param res
+ */
+exports.updatePassword = function (req, res) {
+    console.log(req.method + '======User controller updatePassword ======' + new Date());
+
+    var id = req.session.user._id;
+    if (id) {
+        var user_pwd = req.body;
+        User.findById(id).populate('roles').exec(function (err, user) {
+            if (err || !user) {
+                return core.resJson(res, {message: '修改异常', type: 0})
+            }
+            if (!user.authenticate(user_pwd.oldpassword)) {
+                return core.resJson(res, {message: '旧密码不相符', type: 0})
+            }
+            _.extend(user, _.pick(user_pwd, 'password'));
+            user.save(function (err, result) {
+                if (err) {
+                    return core.resJson(res, {message: '修改异常', type: 0})
+                }
+                req.session.user = result;
+                res.locals.User = user;
+                core.resJson(res, {message: '修改成功', type: 1})
+            });
+        });
+    } else {
+        core.resJson(res, {type: 0, message: '参数获取失败'});
+    }
+};
+
+
+/*
+ * 修改头像 beiwp on 2016/9/2
+ * */
+exports.updateHeadImg = function (req, res) {
+    console.log(req.method + '======User controller updateHeadImg ======' + new Date());
+
+    var id = req.session.user._id;
+    if (id) {
+        User.findById(id).exec(function (err, user) {
+            if (err || !user) {
+                return core.resJson(res, {message: '设置失败', type: 0})
+            }
+            uploader.processFileUpload(req, config.upload.userImgDir, function (fileResult) {
+                if (!fileResult) {
+                    return core.resJson(res, {message: '上传失败', type: 0});
+                }
+
+                var headImg = user.headImg;
+                if (headImg) {
+                    var imgHead = path.join(process.cwd(), 'public/' + headImg);
+                    console.log("----------------" + imgHead);
+                    fs.unlink(imgHead, function (err) {
+                        if (!err) {
+                            console.log('旧图片 删除成功  ' + path.basename(headImg));
+                        }
+                        user.headImg = fileResult.url;
+                        var uUser = new User(user);
+                        funEditUser(uUser, res, '图片更新');
+                    });
+                } else {
+                    user.headImg = fileResult.url;
+                    var uUser = new User(user);
+                    funEditUser(uUser, res, '图片更新');
+                }
+
+                /*_.extend(userFile, fileResult);
+                 var file = new File(userFile);
+                 file.save(function (err, fileObj) {
+                 if (err || !fileObj) {
+                 return core.resJson(res, {message: '上传失败', type: 0});
+                 }
+                 var fileId = fileObj._id;
+                 user.file = fileId;
+                 var uUser = new User(user);
+                 uUser.save(function (err1, newUser) {
+                 if (err1) {
+                 return core.resJson(res, {message: '设置失败', type: 0});
+                 }
+                 core.resJson(res, {message: '设置成功', url: fileResult.url, type: 1})
+                 });
+
+                 });*/
+            });
+
+        })
+    } else {
+        core.resJson(res, {type: 0, message: '参数获取失败'});
+    }
+
+};

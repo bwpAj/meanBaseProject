@@ -14,8 +14,6 @@ var mongoose = require('mongoose'),
     uploader = require('../../libs/uploader')(config.upload);
 
 
-
-
 /**
  * 删除对象 File beiwp on 2016/8/24
  */
@@ -49,7 +47,7 @@ var funEditFile = function (obj, res, mess) {
 exports.addFile = function (req, res) {
     console.log(req.method + '======File controller addFile ======' + new Date());
 
-    uploader.processFileUpload(req, function (result) {
+    uploader.processFileUpload(req, '', function (result) {
         if (!result) {
             return core.resJson(res, {message: '上传失败', type: 0});
         }
@@ -57,7 +55,7 @@ exports.addFile = function (req, res) {
             result.author = req.session.user._id;
         }
         var file = new File(result);
-        funEditFile(file,res,'上传');
+        funEditFile(file, res, '上传');
 
     });
 };
@@ -80,6 +78,17 @@ exports.delFile = function (req, res) {
                 return core.resJson(res, {type: 0, message: '查询对象不存在'});
             }
 
+            if (result.url) {
+                var tempUrl = path.join(process.cwd(), 'public/' + result.url);
+                fs.unlink(tempUrl, function (err) {
+                    if (!err) {
+                        console.log('旧图片 删除成功  ' + path.basename(result.url));
+                    }
+                    funDelFile(result, res);
+                });
+            } else {
+                funDelFile(result, res);
+            }
             // 权限判断
             /*var isAdmin = req.Roles && req.Roles.indexOf('admin') > -1;
              var isAuthor = result.author && ((result.author._id + '') === req.session.user._id);
@@ -87,7 +96,7 @@ exports.delFile = function (req, res) {
              return core.resJson(res, {type: 0, message: '没有权限'});
              }*/
 
-            funDelFile(result, res);
+            //funDelFile(result, res);
 
         });
     } else {
