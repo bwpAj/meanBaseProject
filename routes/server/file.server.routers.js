@@ -32,7 +32,7 @@ router.use(function (req, res, next) {
     next();
 });
 
-router.route('/list').get(auth,file.listFile).post(file.addFile);
+router.route('/list').get(file.listFile).post(file.addFile);
 router.route('/list/:id').get(file.viewFile).put(file.editFile).delete(file.delFile);
 
 

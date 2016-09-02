@@ -79,6 +79,7 @@ module.exports = function (opts) {
     //判断文件临时路径是否存在
     checkExists(options.tmpDir);
     checkExists(options.uploadDir);
+    checkExists(options.userImgDir);
 
     var client = null;
 
@@ -115,21 +116,21 @@ module.exports = function (opts) {
         }
     };
 
-    Uploader.processFileUpload = function (req, callback) {
+    Uploader.processFileUpload = function (req, targetDir, callback) {
         var busboy = new Busboy({headers: req.headers});
         var formPayload = {};
         var result = {};
         busboy.on('file', function (fieldname, file, filename, encoding, mimetype) {
             var fileExtenstion = path.extname(filename).toLowerCase();
             var fileSize = 0;
-            var tempFile = path.join(config.upload.uploadDir, path.basename(filename));
+            var tempFile = path.join(targetDir || config.upload.uploadDir, path.basename(filename));
             file.pipe(fs.createWriteStream(tempFile));
-            file.on('data',function(data){
+            file.on('data', function (data) {
                 fileSize = data.length;
                 console.log(data.length);
             });
             result = {
-                url: options.uploadUrl + encodeURIComponent(filename),
+                url: (!targetDir ? options.uploadUrl : options.userImgUrl) + filename,
                 name: filename,
                 size: fileSize,
                 type: fileExtenstion

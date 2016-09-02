@@ -113,110 +113,7 @@ mainApplicationModule
         }
     ])
 
-    .controller('userController1', ['$scope', 'userService', '$routeParams', '$location', 'baseService', function ($scope, userService, $routeParams, $location, baseService) {
-
-        /*获取角色名字*/
-        $scope.gGetArrName = function (id) {
-            for (var i = 0; i < $scope.roles.length; i++) {
-                if ($scope.roles[i]["_id"] == id) {
-                    return $scope.roles[i]["name"]
-                }
-            }
-        };
-
-        //配置分页基本参数
-        $scope.paginationConf = {
-            currentPage: 1,
-            itemsPerPage: 5
-        };
-
-        //分页 列表
-        $scope.list = function () {
-            var paginationConf = {
-                currentPage: $scope.paginationConf.currentPage,
-                itemsPerPage: $scope.paginationConf.itemsPerPage,
-                username: $scope.user ? $scope.user.username : '',
-                name: $scope.user ? $scope.user.name : ''
-            };
-            userService.query(paginationConf, function (res) {
-                if (res.type == 1) {
-                    $scope.users = res.rows;
-                    $scope.paginationConf.totalItems = res.pages.countItems;
-                } else {
-                    jsUtil.alert(res.message);
-                }
-            }, function (err) {
-                jsUtil.alert('查询失败');
-            });
-        };
-
-        /***************************************************************
-         当页码和页面记录数发生变化时监控后台查询   页面ng-init 就不需要 注册 list() 方法  否则会调两次后台
-         如果把currentPage和itemsPerPage分开监控的话则会触发两次后台事件。
-         ***************************************************************/
-        $scope.$watch('paginationConf.currentPage + paginationConf.itemsPerPage', $scope.list);
-
-        //查看
-        $scope.findOne = function () {
-            userService.get({
-                userId: $routeParams.userId
-            }, function (res) {
-                if (res.type != 1) {
-                    jsUtil.alert(res.message);
-                    $location.path('/user/list');
-                } else {
-                    $scope.user = res.data.user;
-                    $scope.roles = res.data.roles;
-                }
-            }, function (err) {
-                jsUtil.alert('获取失败');
-                $location.path('/user/list');
-            });
-
-        };
-
-        //新增
-        $scope.add = function () {
-            var user = new userService($scope.user);
-            user.$save(function (res) {
-                jsUtil.alert(res.message);
-                if (res.type == 1) {//添加成功
-                    $location.path('/user/list');
-                }
-            }, function (err) {
-                jsUtil.alert('系统异常');
-            });
-        };
-
-        //修改
-        $scope.update = function () {
-            var user = new userService($scope.user);
-            user.$update(function (res) {
-                jsUtil.alert(res.message);
-                if (res.type == 1) {
-                    $location.path('/user/list');
-                }
-            }, function (err) {
-                jsUtil.alert('更新失败');
-            });
-        };
-
-        //删除
-        $scope.del = function (id) {
-            userService.delete({userId: id},
-                function (res) {
-                    if (res.type == 1) {
-                        $scope.list();
-                    }
-                    jsUtil.alert(res.message);
-                }, function (err) {
-                    jsUtil.alert('系统异常');
-            });
-        }
-
-    }])
-
-    .controller('userController', ['$scope', '$routeParams', '$location', 'baseService','userService', function ($scope, $routeParams, $location, baseService, userService) {
+    .controller('userController', ['$scope', '$routeParams', '$location', '$timeout', 'baseService', 'userService', function ($scope, $routeParams, $location, $timeout, baseService, userService) {
         //配置分页基本参数
         $scope.paginationConf = {
             currentPage: 1,
@@ -231,7 +128,7 @@ mainApplicationModule
                 }
             }
         };
-        
+
         //新增
         $scope.addUser = function () {
             var user = new userService($scope.user);
@@ -244,7 +141,7 @@ mainApplicationModule
                 jsUtil.alert('系统异常');
             });
         };
-        
+
         //删除
         $scope.delUser = function (id) {
             userService.delete({userId: id},
@@ -258,7 +155,7 @@ mainApplicationModule
                 }
             );
         };
-    
+
         //修改
         $scope.updateUser = function () {
             var user = new userService($scope.user);
@@ -271,7 +168,7 @@ mainApplicationModule
                 jsUtil.alert('更新失败');
             });
         };
-        
+
         //分页 列表
         $scope.listUser = function () {
             var paginationConf = {
@@ -290,13 +187,13 @@ mainApplicationModule
                 jsUtil.alert('查询失败');
             });
         };
-    
+
         /***************************************************************
          当页码和页面记录数发生变化时监控后台查询   页面ng-init 就不需要 注册 list() 方法  否则会调两次后台
          如果把currentPage和itemsPerPage分开监控的话则会触发两次后台事件。
          ***************************************************************/
         $scope.$watch('paginationConf.currentPage + paginationConf.itemsPerPage', $scope.listUser);
-    
+
         //查看
         $scope.viewUser = function () {
             userService.get({
@@ -313,7 +210,105 @@ mainApplicationModule
                 $location.path('/user/list');
             });
         };
-        
+
+        $scope.viewMe = function () {
+            userService.viewMe(function (res) {
+                $scope.user = res.user;
+                $scope.acts = res.acts;
+                //$scope.fileSrc = res.user.file ? res.user.file.url : '';
+            });
+        };
+
+        $scope.upBtn = true;//修改我的信息 按钮初始化不可点
+        //$watch(watchExpression, listener, objectEquality); objectEquality深度监听
+        $scope.$watch('user', function (newValue, oldValue, scope) {
+            if (newValue && oldValue && newValue != oldValue) {
+                $timeout(function () {
+                    $scope.upBtn = false;
+                }, 10);
+            }
+        }, true);
+
+        $scope.editMe = function () {
+            var user = new userService($scope.user);
+            user.$editMe(function (res) {
+                if (res.type == 1) {
+                    $scope.user = res.user;
+                }
+                jsUtil.alert(res.message);
+            }, function () {
+                jsUtil.alert('修改失败')
+            })
+        };
+
+        $scope.pwdBtn = true;//修改密码 按钮初始化不可点
+
+        $scope.$watch('oldpassword + password + repassword', function (newValue, oldValue, scope) {
+            if (scope.oldpassword && scope.password && (scope.password === scope.repassword)) {
+                $timeout(function () {
+                    $scope.pwdBtn = false;
+                }, 10);
+            } else {
+                $timeout(function () {
+                    $scope.pwdBtn = true;
+                }, 10);
+            }
+        });
+
+        $scope.updatePassword = function () {
+            var user = new userService({
+                oldpassword:$scope.oldpassword,
+                password:$scope.password
+            });
+            user.$updatePassword(function (res) {
+                if (res.type == 1) {
+                    $scope.oldpassword = '';
+                    $scope.password = '';
+                    $scope.repassword = '';
+                }
+                jsUtil.alert(res.message);
+            }, function () {
+                jsUtil.alert('修改失败')
+            })
+        };
+
+        $scope.imgBtn = true; //修改头像 按钮初始化不可点
+        //trigger input file
+        $scope.triggerImgFile = function () {
+            $("#userFile").click();
+        };
+
+        //input file onchange
+        $scope.getImgFileChange = function (obj) {
+            //方式二
+            $timeout(function () {
+                $scope.user.headImg = baseService.getFilePath(obj);
+                $scope.imgBtn = false;
+            }, 100);
+            //方式二
+            /*setTimeout(function(){
+             $scope.$apply(function(){
+             $scope.fileSrc = $rootScope.getObjPath(obj);
+             $scope.disbledFlag = false;
+             })
+             },100);*/
+        };
+
+        $scope.sendImg = function () {
+            var file = document.querySelector('input[type=file]').files[0];
+            baseService.uploadUsingHttp('/admin/user/updateHeadImg', file, function (response) {
+                if (response.type == 1) {
+                    $timeout(function () {
+                        $scope.user = response.data.user;
+                        $scope.imgBtn = true;
+                    }, 10);
+                }
+                jsUtil.alert(response.message);
+            }, function (err) {
+                jsUtil.alert('设置失败');
+            })
+        };
+
     }])
 
     .controller('fileController', ['$scope', '$routeParams', '$location', '$timeout', 'baseService', 'fileService', function ($scope, $routeParams, $location, $timeout, baseService, fileService) {
@@ -358,7 +353,7 @@ mainApplicationModule
         };
         /*通过按钮触发file表单的change事件 获取file的地址======================*/
 
-        
+
         //新增
         $scope.addFile = function () {
             var file = document.querySelector('input[type=file]').files[0];
@@ -383,7 +378,7 @@ mainApplicationModule
                 jsUtil.alert('上传时系统出错');
             });
         };
-        
+
         //删除
         $scope.delFile = function (id) {
             fileService.delete({fileId: id},
@@ -417,7 +412,7 @@ mainApplicationModule
                 jsUtil.alert('查询失败');
             });
         };
-    
+
         /***************************************************************
          当页码和页面记录数发生变化时监控后台查询   页面ng-init 就不需要 注册 list() 方法  否则会调两次后台
          如果把currentPage和itemsPerPage分开监控的话则会触发两次后台事件。
@@ -430,7 +425,7 @@ mainApplicationModule
     .controller('roleController', ['$scope', 'roleService', '$routeParams', '$location', function ($scope, roleService, $routeParams, $location) {
 
         // 过滤权限数组
-        var filterActions = function (data,checkData) {
+        var filterActions = function (data, checkData) {
             var targetArr = [];
             angular.forEach(data, function (obj, index) {
                 if (obj.actions) {
@@ -442,8 +437,8 @@ mainApplicationModule
 
                         //初始化页面时勾选对应的值
                         if (checkData && checkData.length > 0) {
-                            angular.forEach(checkData,function(obx,inj){
-                                if(elt.value == obx){
+                            angular.forEach(checkData, function (obx, inj) {
+                                if (elt.value == obx) {
                                     elt.isCheck = true;
                                 }
                             })
@@ -452,9 +447,9 @@ mainApplicationModule
                     })
                 }
             });
-            if(checkData){
+            if (checkData) {
                 return data;
-            }else{
+            } else {
                 return targetArr;
             }
 
@@ -549,7 +544,7 @@ mainApplicationModule
                     $location.path('/role/list');
                 } else {
                     $scope.role = res.data;
-                    $scope.actions = filterActions($scope.actions,res.data.actions);
+                    $scope.actions = filterActions($scope.actions, res.data.actions);
                 }
             }, function (err) {
                 jsUtil.alert('获取失败');

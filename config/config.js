@@ -22,7 +22,9 @@ var config = {
     upload:{
         tmpDir:  appPath + '/public/uploaded/tmp',
         uploadDir: appPath + '/public/uploaded/files',
+        userImgDir: appPath + '/public/uploaded/users',
         uploadUrl:  '/uploaded/files/',
+        userImgUrl:  '/uploaded/users/',
         maxPostSize: 100 * 1024 * 1024, // 100M
         minFileSize: 1,
         maxFileSize: 50 * 1024 * 1024, // 50M
