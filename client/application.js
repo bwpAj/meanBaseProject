@@ -20,15 +20,6 @@ mainApplicationModule.config(['$locationProvider','$routeProvider',
         $locationProvider.hashPrefix('!');
 
         $routeProvider
-            .when('/me',{
-                templateUrl: '../client/me/view.html',
-                controller: 'MeController'
-            })
-            .when('/me/edit',{
-                templateUrl: '../client/me/edit.html',
-                controller: 'MeController'
-            })
-            
             .when('/user/list',{
                 templateUrl: '../client/user/list.html',
                 controller: 'userController'
@@ -45,6 +36,16 @@ mainApplicationModule.config(['$locationProvider','$routeProvider',
                 templateUrl: '../client/user/edit.html',
                 controller: 'userController'
             })
+
+            .when('/user/viewMe',{
+                templateUrl: '../client/user/viewMe.html',
+                controller: 'userController'
+            })
+            .when('/user/viewMe/:userId/edit',{
+                templateUrl: '../client/user/editMe.html',
+                controller: 'userController'
+            })
+
 
             .when('/file/list',{
                 templateUrl: '../client/file/list.html',
@@ -73,8 +74,7 @@ mainApplicationModule.config(['$locationProvider','$routeProvider',
             })
 
             .otherwise({
-                templateUrl:'../client/index.html',
-                controller:'MeController'
+                templateUrl:'../client/index.html'
             })
     }
 ]);

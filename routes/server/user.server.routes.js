@@ -38,9 +38,12 @@ router.use(function (req, res, next) {
     next();
 });
 
-router.route('/list').get(auth,user.listUser).post(auth,user.addUser);
+router.route('/list').get(user.listUser).post(auth,user.addUser);
 router.route('/list/:id').get(user.viewUser).put(user.editUser).delete(user.delUser);
-
+router.route('/viewMe').all(user.viewMe);
+router.route('/editMe').all(user.editMe);
+router.route('/updatePassword').all(user.updatePassword);
+router.route('/updateHeadImg').all(user.updateHeadImg);
 
 module.exports = function (app) {
     var path = core.translateAdminDir('/user');
