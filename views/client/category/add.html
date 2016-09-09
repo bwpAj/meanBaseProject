@@ -1,0 +1,16 @@
+<!--Created by beiwp on 2016/9/9.-->
+<section><!--ng-init="list()"-->
+    <div class="row">
+        <div class="col-md-12">
+            <form action="">
+                <div class="form-group"><label for="">名称</label><input type="text" class="form-control" ng-model="category.name" /></div>
+                <div class="form-group"><label for="">标记(别名,英文符号,可选)</label><input type="text" class="form-control" ng-model="category.flag" /></div>
+                <div class="form-group"><label for="">描述</label>
+                    <textarea name="description" id="" rows='8' class="form-control" ng-model="category.description" ></textarea>
+                </div>
+            </form>
+            <button class="btn btn-primary" ng-click="addCategory()">提交</button>
+        </div>
+    </div>
+</section>
+    

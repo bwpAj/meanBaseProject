@@ -72,7 +72,7 @@
 <section id="container">
     <header id="header">
 
-        <div class="brand"><a href="<%= adminDir %>" class="logo">管理后台</a></div>
+        <div class="brand"><a href="<%= adminDir %>" class="logo">MEAN论坛管理后台</a></div>
 
         <div class="toggle-navigation toggle-left">
             <input class="d" value="<%=token %>" type="hidden"/>
@@ -106,6 +106,60 @@
                 <li class="<%= Path === 'index' ? 'active' : '' %>">
                     <a href="#!/index"><i class="fa fa-dashboard"></i><span>首页</span></a>
                 </li>
+
+                <% if(User && Roles.indexOf('admin') > -1 || Actions.indexOf('CONTENT_INDEX') > -1 ) { %>
+                <li class="sub-menu <%= Path === 'content' ? 'active' : '' %>">
+                    <a href="javascript:void(0)">
+                        <i class="fa fa-file-text"></i>
+                        <span>内容</span>
+                        <i class="arrow fa fa-angle-right pull-right"></i>
+                    </a>
+                    <ul>
+                        <li class="<%= Menu === 'list' ? 'active' : '' %>">
+                            <a href="#!/content/list">内容列表</a>
+                        </li>
+                        <li class="<%= Menu === 'add' ? 'active' : '' %>">
+                            <a href="#!/content/add">添加内容</a>
+                        </li>
+                    </ul>
+                </li>
+                <% } %>
+
+                <% if(User && Roles.indexOf('admin') > -1 || Actions.indexOf('CATEGORY_INDEX') > -1 ) { %>
+                <li class="sub-menu <%= Path === 'category' ? 'active' : '' %>">
+                    <a href="javascript:void(0)">
+                        <i class="fa fa-th"></i>
+                        <span>分类</span>
+                        <i class="arrow fa fa-angle-right pull-right"></i>
+                    </a>
+                    <ul>
+                        <li class="<%= Menu === 'list' ? 'active' : '' %>">
+                            <a href="#!/category/list">分类列表</a>
+                        </li>
+                        <li class="<%= Menu === 'add' ? 'active' : '' %>">
+                            <a href="#!/category/add">添加分类</a>
+                        </li>
+                    </ul>
+                </li>
+                <% } %>
+
+                <% if(User && Roles.indexOf('admin') > -1 || Actions.indexOf('TAG_INDEX') > -1 ) { %>
+                <li class="sub-menu <%= Path === 'tag' ? 'active' : '' %>">
+                    <a href="javascript:void(0)">
+                        <i class="fa fa-tags"></i>
+                        <span>标签</span>
+                        <i class="arrow fa fa-angle-right pull-right"></i>
+                    </a>
+                    <ul>
+                        <li class="<%= Menu === 'list' ? 'active' : '' %>">
+                            <a href="#!/tag/list">标签列表</a>
+                        </li>
+                        <li class="<%= Menu === 'add' ? 'active' : '' %>">
+                            <a href="#!/tag/add">添加标签</a>
+                        </li>
+                    </ul>
+                </li>
+                <% } %>
 
                 <% if(User && Roles.indexOf('admin') > -1 || Actions.indexOf('COMMENT_INDEX') > -1 ) { %>
                 <li class="<%= Path === 'comment' ? 'active' : '' %>">
@@ -201,6 +255,7 @@
 </body>
 <script>
     window.token = '<%- token || null %>' ;console.log(window.token);
+    window.data = '<%- data || null %>' ;console.log(window.data);
 </script>
 <script src="../lib/jquery/dist/jquery.min.js"></script>
 <script src="../lib/bootstrap/dist/js/bootstrap.min.js"></script>
@@ -224,6 +279,7 @@
 <script src="../application.js"></script>
 <script src="../directive.js"></script>
 <script src="../controllers.js"></script>
+<script src="../resource.js"></script>
 <script src="../services.js"></script>
 
 

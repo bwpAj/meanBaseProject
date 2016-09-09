@@ -1,0 +1,40 @@
+<!--Created by beiwp on 2016/9/8.-->
+<section ng-init="queryAllCategorys();queryAllTags();"><!--ng-init="list()"-->
+    <div class="row">
+        <div class="col-md-12">
+            <form action="" method="post">
+                <div class="form-group">
+                    <label for="">标题</label>
+                    <input type="text" class="form-control" name="title" ng-model="content.title"/>
+                </div>
+                <div class="form-group">
+                    <label for="">分类</label>
+                    <select name="category" ng-model="content.category" class="form-control input-sm">
+                        <option value="{{category._id}}" ng-if="category._id" ng-repeat="category in categorys">{{category.name}}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <p><label for="">图集</label>{{name}}</p>
+                    <tmp-file data-url="/admin/content/"></tmp-file>
+                </div>
+                <div class="form-group">
+                    <label for="">内容</label>
+                    <textarea ng-model="content.content" id="d" cols="30" rows="20" class="form-control"></textarea>
+                </div>
+                <div class="form-group"><label for="">标签</label>
+
+                    <div>
+                        <select name="tags[]" id="J_select_tags" data-placeholder="请选择标签" mutiple="" style="width:500px;">
+                            <option value="{{tag._id}}" ng-repeat="tag in tags">{{tag.name}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="help-block">
+                    <span class="btn btn-info btn-xs">新增标签</span>
+                </div>
+                <button class="btn btn-primary">提交</button>
+            </form>
+        </div>
+    </div>
+</section>
+    

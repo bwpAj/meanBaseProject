@@ -1,0 +1,13 @@
+<!--Created by beiwp on 2016/9/9.-->
+<section ng-init="viewTag()">
+    <div class="row">
+        <div class="col-md-12">
+            <form action="">
+                <div class="form-group"><label for="">名称</label><input type="text" class="form-control"  ng-model="tag.name" /></div>
+                <div class="form-group"><label for="">描述</label><textarea name="" id="" cols="30" rows="10" ng-model="tag.description" class="form-control">{{tag.description}}</textarea></div>
+            </form>
+            <button class="btn btn-primary" ng-click="updateTag()" ng-disabled="tabBtnDisabled" >提交</button>
+        </div>
+    </div>
+</section>
+    
