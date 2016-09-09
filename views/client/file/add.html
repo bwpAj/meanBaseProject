@@ -19,7 +19,7 @@
                             <!--angular 指令 读取文件 返回二进制一样的东东-->
                             <!--<input type="file" id="fileupload" ng-model="fileupload" multiple="multiple" file-model="myFile" style="display: none" />-->
                             <!--通过 document.URL.createObjURL 返回file路径-->
-                                <input type="file" name="file" ng-model="file" id="fileupload" multiple="multiple" onchange="angular.element(this).scope().getFileChange(this)" style="display: none"/>
+                            <input type="file" name="file" ng-model="file" id="fileupload" multiple="multiple" onchange="angular.element(this).scope().getFileChange(this)" style="display: none"/>
                             <input type="button" class="btn btn-primary " ng-click="addFile()" value="提交" ng-if="hasFile"/>
                         </p>
                     </div>

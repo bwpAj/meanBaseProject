@@ -9,110 +9,6 @@
 
 mainApplicationModule
 
-    .controller('MeController', ['$scope', '$routeParams', '$location', 'Me', 'baseService', '$rootScope', '$timeout', 'fileReader',
-        function ($scope, $routeParams, $location, Me, baseService, $rootScope, $timeout, fileReader) {
-
-            //input file onchange
-            $scope.getImgFileChange = function (obj) {
-                //方式二
-                $timeout(function () {
-                    $scope.fileSrc = baseService.getFilePath(obj);
-                    $scope.disbledFlag = false;
-                }, 100);
-                //方式二
-                /*setTimeout(function(){
-                 $scope.$apply(function(){
-                 $scope.fileSrc = $rootScope.getObjPath(obj);
-                 $scope.disbledFlag = false;
-                 })
-                 },100);*/
-            };
-
-            $scope.find = function () {
-                var userMe = Me.get(function (res) {
-                    $scope.userMe = userMe;
-                    $scope.fileSrc = '';//userMe.user.file ? userMe.user.file.url : '';
-                });
-            };
-
-            $scope.findOne = function () {
-                var user = Me.findOne(function (res) {
-                    $scope.user = user;
-                });
-            };
-
-            $scope.update = function () {
-                $scope.user.$update(function (res) {
-                        jsUtil.alert(res.message);
-                        if (res.type == 1) { //修改成功 跳转上一页
-                            $scope.user = res.user;
-                            $location.path('me/');
-                        }
-                    },
-                    function (err) {
-                        jsUtil.alert('修改异常');
-                    });
-            };
-
-            $scope.updatePwd = function () {
-                if (!this.oldpassword) {
-                    jsUtil.alert('请输入原始密码');
-                    return;
-                }
-                if (!this.password) {
-                    jsUtil.alert('请输入新密码');
-                    return;
-                }
-
-                if (this.password !== this.repassword) {
-                    jsUtil.alert('两次密码不一致');
-                    return;
-                }
-                var user = new Me({
-                    oldpassword: this.oldpassword,
-                    password: this.password,
-                    repassword: this.repassword
-                });
-
-                user.$update_pwd(function (res) {
-                    $scope.oldpassword = '';
-                    $scope.password = '';
-                    $scope.repassword = '';
-                    jsUtil.alert(res.message);
-                    if (res.type == 1) { //修改成功 跳转上一页
-                        $location.path('me/');
-                    }
-                }, function (err) {
-                    console.log(err);
-                    jsUtil.alert('修改异常');
-                })
-            };
-
-            $scope.disbledFlag = true; //按钮disabled
-            //trigger input file
-            $scope.triggerImgFile = function () {
-                $("#userFile").click();
-                $scope.disbledFlag = true;
-            };
-
-            $scope.sendImg = function () {
-                var file = document.querySelector('input[type=file]').files[0];
-                baseService.uploadUsingHttp('/admin/me/updateHeadImg', file, function (response) {
-                    if (response.type == 1) {
-                        $timeout(function () {
-                            $scope.fileSrc = response.url;
-                            $scope.disbledFlag = true;
-                        }, 100);
-                    }
-                    jsUtil.alert(response.message);
-                }, function (err) {
-                    jsUtil.alert('设置失败');
-                })
-            };
-
-        }
-    ])
-
     .controller('userController', ['$scope', '$routeParams', '$location', '$timeout', 'baseService', 'userService', function ($scope, $routeParams, $location, $timeout, baseService, userService) {
         //配置分页基本参数
         $scope.paginationConf = {
@@ -257,8 +153,8 @@ mainApplicationModule
 
         $scope.updatePassword = function () {
             var user = new userService({
-                oldpassword:$scope.oldpassword,
-                password:$scope.password
+                oldpassword: $scope.oldpassword,
+                password: $scope.password
             });
             user.$updatePassword(function (res) {
                 if (res.type == 1) {
@@ -349,7 +245,7 @@ mainApplicationModule
                 $scope.hasFile = true;
                 $scope.fileName = obj.value;
                 $scope.file = obj.value;
-            }, 100);
+            }, 10);
         };
         /*通过按钮触发file表单的change事件 获取file的地址======================*/
 
@@ -551,5 +447,321 @@ mainApplicationModule
                 $location.path('/role/list');
             });
         };
+    }])
+
+    .controller('contentController', ['$scope', '$routeParams', '$location', 'baseService', 'contentService', 'categoryService', 'tagService', function ($scope, $routeParams, $location, baseService, contentService, categoryService, tagService) {
+        //配置分页基本参数
+        $scope.paginationConf = {
+            currentPage: 1,
+            itemsPerPage: 5
+        };
+
+        //拉取分类数据
+        $scope.queryAllCategorys = function () {
+            categoryService.queryAll(function (res) {
+                $scope.categorys = res.rows;
+            }, function (err) {
+                jsUtil.alert('数据初始化失败');
+            });
+        };
+
+        //拉取标签数据
+        $scope.queryAllTags = function () {
+            tagService.queryAll(function (res) {
+                $scope.tags = res.rows;
+            }, function (err) {
+                jsUtil.alert('数据初始化失败');
+            });
+        };
+
+        //新增
+        $scope.addContent = function () {
+            var content = new contentService($scope.content);
+            content.$save(function (res) {
+                jsUtil.alert(res.message);
+                if (res.type == 1) {//添加成功
+                    $location.path('/content/list');
+                }
+            }, function (err) {
+                jsUtil.alert('系统异常');
+            });
+        };
+
+        //删除
+        $scope.delContent = function (id) {
+            contentService.delete({contentId: id},
+                function (res) {
+                    jsUtil.alert(res.message);
+                    if (res.type == 1) {
+                        $scope.listContent();
+                    }
+                }, function (err) {
+                    jsUtil.alert('系统异常');
+                }
+            );
+        };
+
+        //修改
+        $scope.updateContent = function () {
+            var content = new contentService($scope.content);
+            content.$update(function (res) {
+                jsUtil.alert(res.message);
+                if (res.type == 1) {
+                    $location.path('/content/list');
+                }
+            }, function (err) {
+                jsUtil.alert('更新失败');
+            });
+        };
+
+        //分页 列表
+        $scope.listContent = function () {
+            var paginationConf = {
+                currentPage: $scope.paginationConf.currentPage,
+                itemsPerPage: $scope.paginationConf.itemsPerPage,
+                name: $scope.content ? $scope.content.name : ''
+            };
+            contentService.query(paginationConf, function (res) {
+                if (res.type == 1) {
+                    $scope.contents = res.rows;
+                    $scope.paginationConf.totalItems = res.pages.countItems;
+                } else {
+                    jsUtil.alert(res.message);
+                }
+            }, function (err) {
+                jsUtil.alert('查询失败');
+            });
+        };
+
+        /***************************************************************
+         当页码和页面记录数发生变化时监控后台查询   页面ng-init 就不需要 注册 list() 方法  否则会调两次后台
+         如果把currentPage和itemsPerPage分开监控的话则会触发两次后台事件。
+         ***************************************************************/
+        $scope.$watch('paginationConf.currentPage + paginationConf.itemsPerPage', $scope.listContent);
+
+        //查看
+        $scope.viewContent = function () {
+            contentService.get({
+                contentId: $routeParams.contentId
+            }, function (res) {
+                if (res.type != 1) {
+                    jsUtil.alert(res.message);
+                    $location.path('/content/list');
+                } else {
+                    $scope.content = res.data.content;
+                }
+            }, function (err) {
+                jsUtil.alert('获取失败');
+                $location.path('/content/list');
+            });
+        };
+
+
+    }])
+
+    .controller('categoryController', ['$scope', '$routeParams', '$location', 'baseService', 'categoryService', function ($scope, $routeParams, $location, baseService, categoryService) {
+        //配置分页基本参数
+        $scope.paginationConf = {
+            currentPage: 1,
+            itemsPerPage: 5
+        };
+
+        //提交按钮
+        $scope.subBtn = true;
+        $scope.$watch('category', function (newValue, oldValue, scope) {
+            if (newValue && oldValue && $scope.category && $scope.category.name && $scope.category.description && $scope.category.flag) {
+                $scope.subBtn = false;
+            } else {
+                $scope.subBtn = true;
+            }
+        }, true);//深度监听
+
+        //新增
+        $scope.addCategory = function () {
+            var category = new categoryService($scope.category);
+            category.$save(function (res) {
+                jsUtil.alert(res.message);
+                if (res.type == 1) {//添加成功
+                    $location.path('/category/list');
+                }
+            }, function (err) {
+                jsUtil.alert('系统异常');
+            });
+        };
+
+        //删除
+        $scope.delCategory = function (id) {
+            categoryService.delete({categoryId: id},
+                function (res) {
+                    jsUtil.alert(res.message);
+                    if (res.type == 1) {
+                        $scope.listCategory();
+                    }
+                }, function (err) {
+                    jsUtil.alert('系统异常');
+                }
+            );
+        };
+
+        //修改
+        $scope.updateCategory = function () {
+            var category = new categoryService($scope.category);
+            category.$update(function (res) {
+                jsUtil.alert(res.message);
+                if (res.type == 1) {
+                    $location.path('/category/list');
+                }
+            }, function (err) {
+                jsUtil.alert('更新失败');
+            });
+        };
+
+        //分页 列表
+        $scope.listCategory = function () {
+            var paginationConf = {
+                currentPage: $scope.paginationConf.currentPage,
+                itemsPerPage: $scope.paginationConf.itemsPerPage,
+                name: $scope.category ? $scope.category.name : ''
+            };
+            categoryService.query(paginationConf, function (res) {
+                if (res.type == 1) {
+                    $scope.categorys = res.rows;
+                    $scope.paginationConf.totalItems = res.pages.countItems;
+                } else {
+                    jsUtil.alert(res.message);
+                }
+            }, function (err) {
+                jsUtil.alert('查询失败');
+            });
+        };
+
+        /***************************************************************
+         当页码和页面记录数发生变化时监控后台查询   页面ng-init 就不需要 注册 list() 方法  否则会调两次后台
+         如果把currentPage和itemsPerPage分开监控的话则会触发两次后台事件。
+         ***************************************************************/
+        $scope.$watch('paginationConf.currentPage + paginationConf.itemsPerPage', $scope.listCategory);
+
+        //查看
+        $scope.viewCategory = function () {
+            categoryService.get({
+                categoryId: $routeParams.categoryId
+            }, function (res) {
+                if (res.type != 1) {
+                    jsUtil.alert(res.message);
+                    $location.path('/category/list');
+                } else {
+                    $scope.category = res.data;
+                }
+            }, function (err) {
+                jsUtil.alert('获取失败');
+                $location.path('/category/list');
+            });
+        };
+
+        //查询所有
+        $scope.queryAllContent = function () {
+
+        }
+    }])
+
+    .controller('tagController', ['$scope', '$routeParams', '$location', 'baseService', 'tagService', function ($scope, $routeParams, $location, baseService, tagService) {
+        //配置分页基本参数
+        $scope.paginationConf = {
+            currentPage: 1,
+            itemsPerPage: 5
+        };
+
+        //提交按钮
+        $scope.tabBtnDisabled = true;
+        $scope.$watch('tag', function (newValue, oldValue, scope) {
+            if (newValue && oldValue && $scope.tag && $scope.tag.name && $scope.tag.description) {
+                $scope.tabBtnDisabled = false;
+            } else {
+                $scope.tabBtnDisabled = true;
+            }
+        }, true);//深度监听
+
+        //新增
+        $scope.addTag = function () {
+            var tag = new tagService($scope.tag);
+            tag.$save(function (res) {
+                jsUtil.alert(res.message);
+                if (res.type == 1) {//添加成功
+                    $location.path('/tag/list');
+                }
+            }, function (err) {
+                jsUtil.alert('系统异常');
+            });
+        };
+
+        //删除
+        $scope.delTag = function (id) {
+            tagService.delete({tagId: id},
+                function (res) {
+                    jsUtil.alert(res.message);
+                    if (res.type == 1) {
+                        $scope.listTag();
+                    }
+                }, function (err) {
+                    jsUtil.alert('系统异常');
+                }
+            );
+        };
+
+        //修改
+        $scope.updateTag = function () {
+            var tag = new tagService($scope.tag);
+            tag.$update(function (res) {
+                jsUtil.alert(res.message);
+                if (res.type == 1) {
+                    $location.path('/tag/list');
+                }
+            }, function (err) {
+                jsUtil.alert('更新失败');
+            });
+        };
+
+        //分页 列表
+        $scope.listTag = function () {
+            var paginationConf = {
+                currentPage: $scope.paginationConf.currentPage,
+                itemsPerPage: $scope.paginationConf.itemsPerPage,
+                name: $scope.tag ? $scope.tag.name : ''
+            };
+            tagService.query(paginationConf, function (res) {
+                if (res.type == 1) {
+                    $scope.tags = res.rows;
+                    $scope.paginationConf.totalItems = res.pages.countItems;
+                } else {
+                    jsUtil.alert(res.message);
+                }
+            }, function (err) {
+                jsUtil.alert('查询失败');
+            });
+        };
+
+        /***************************************************************
+         当页码和页面记录数发生变化时监控后台查询   页面ng-init 就不需要 注册 list() 方法  否则会调两次后台
+         如果把currentPage和itemsPerPage分开监控的话则会触发两次后台事件。
+         ***************************************************************/
+        $scope.$watch('paginationConf.currentPage + paginationConf.itemsPerPage', $scope.listTag);
+
+        //查看
+        $scope.viewTag = function () {
+            tagService.get({
+                tagId: $routeParams.tagId
+            }, function (res) {
+                if (res.type != 1) {
+                    jsUtil.alert(res.message);
+                    $location.path('/tag/list');
+                } else {
+                    $scope.tag = res.data;
+                }
+            }, function (err) {
+                jsUtil.alert('获取失败');
+                $location.path('/tag/list');
+            });
+        };
+
     }])
 ;

@@ -5,96 +5,7 @@
 
 mainApplicationModule
 
-    .factory('Me', ['$resource',
-        function ($resource) {
-            return $resource('/admin/me/:userId', {
-                userId: '@_id'
-            }, {
-                findOne: {
-                    method: 'GET',
-                    url: '/admin/me/edit'
-                },
-                update: {
-                    method: 'PUT',
-                    url: '/admin/me/edit'
-                },
-                update_pwd: {
-                    method: 'PUT',
-                    url: '/admin/me/updatepwd'
-                }
-
-                /*query:{
-                 method: 'GET',
-                 isArray: false
-                 }*/
-            });
-        }
-    ])
-
-    .factory('userService', ['$resource',
-        function ($resource) {
-            return $resource('/admin/user/list/:userId', {
-                userId: '@_id'
-            }, {
-                //扩展的update方法
-                update: {
-                    method: 'PUT'
-                },
-                query: {
-                    isArray: false
-                },
-                viewMe: {
-                    url: '/admin/user/viewMe'
-                },
-                editMe: {
-                    url: '/admin/user/editMe',
-                    method: 'PUT'
-                },
-                updatePassword: {
-                    url: '/admin/user/updatePassword',
-                    method: 'PUT'
-                }
-            })
-        }
-    ])
-
-    .factory('fileService', ['$resource',
-        function ($resource) {
-            return $resource('/admin/file/list/:fileId', {
-                fileId: '@_id'
-            }, {
-                //扩展的update方法
-                update: {
-                    method: 'PUT'
-                },
-                query: {
-                    isArray: false
-                }
-            })
-        }
-    ])
-
-    .factory('roleService', ['$resource',
-        function ($resource) {
-            return $resource('/admin/role/list/:roleId', {
-                roleId: '@_id'
-            }, {
-                //扩展的update方法
-                update: {
-                    method: 'PUT'
-                },
-                query: {
-                    isArray: false
-                },
-                getRoleActions: {
-                    url: '/admin/role/getRoleActions'
-                }
-            })
-        }
-    ])
-
-
-    .factory('fileReader', ["$q", "$log", function ($q, $log) {
+    .service('fileReader', ["$q", "$log", function ($q, $log) {
         var onLoad = function (reader, deferred, scope) {
             return function () {
                 scope.$apply(function () {
@@ -127,7 +38,7 @@ mainApplicationModule
     }])
 
 
-    .factory('baseService', ['$http', 'Upload',
+    .service('baseService', ['$http', 'Upload',
         function ($http, Upload) {
             var baseService = {
                 /**
@@ -234,7 +145,6 @@ mainApplicationModule
             $window.localStorage['read-token'] = token;
         };
         var getToken = function () {
-            console.log(888);
             return $window.localStorage['read-token'];
         };
         return {

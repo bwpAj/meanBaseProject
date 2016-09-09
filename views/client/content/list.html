@@ -1,0 +1,59 @@
+<section><!--ng-init="listContent()"-->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="lists">
+                <div class="panel panel-primary">
+                    <div class="panel-heading"> 条件搜索</div>
+                    <div class="panel-body">
+                        <div class="col-sm-2"><input type="text" ng-model="content.name" class="form-control" placeholder="姓名"/></div>
+                        <!--<div class="col-sm-2"><input type="text"  ng-model="content.author.name" class="form-control" placeholder="创建人" /></div>-->
+                        <!--<div class="col-sm-2"><input type="text"  ng-model="content.created"  class="form-control "  placeholder="创建时间" /></div>-->
+                        <button type="button" ng-click="listContent()" class="btn btn-primary"> 搜索</button>
+                    </div>
+                </div>
+                <div class="panel panel-primary">
+                    <div class="panel-heading"> 数据展示</div>
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>用户名</th>
+                            <th>姓名</th>
+                            <th>角色</th>
+                            <th>创建人</th>
+                            <th>创建日期</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="content in contents">
+                            <td>
+                                <a href="#!/content/{{content._id}}/view" title="{{content.email}}">{{content.contentname}}</a>
+                            </td>
+                            <td>
+                                {{content.name}}
+                            </td>
+                            <td>
+                                <span ng-if="!content.roles || content.roles.length > 0 " ng-repeat=" role in content.roles" class="label label-info">
+                                        {{role.name}}
+                                </span>
+                            </td>
+                            <td>
+                                {{content.author ? content.author.contentname : '无' }}
+                            </td>
+                            <td>
+                                {{content.created}}
+                            </td>
+                            <td>
+                                <a href="#!/content/{{content._id}}/edit" class="btn btn-default btn-xs">编辑</a>
+                                <a ng-click="delContent(content._id)" ng-if="content.status !== 101" class="btn btn-danger btn-xs J_del">删除</a>
+                            </td>
+                        </tr>
+                        </tbody>
+
+                    </table>
+                </div>
+                <tm-pagination conf="paginationConf"></tm-pagination>
+            </div>
+        </div>
+    </div>
+</section>

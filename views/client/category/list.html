@@ -1,0 +1,53 @@
+<section><!--ng-init="listCategory()"-->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="lists">
+                <div class="panel panel-primary">
+                    <div class="panel-heading"> 条件搜索</div>
+                    <div class="panel-body">
+                        <div class="col-sm-2"><input type="text" ng-model="category.name" class="form-control" placeholder="分类名"/></div>
+                        <!--<div class="col-sm-2"><input type="text"  ng-model="category.author.name" class="form-control" placeholder="创建人" /></div>-->
+                        <!--<div class="col-sm-2"><input type="text"  ng-model="category.created"  class="form-control "  placeholder="创建时间" /></div>-->
+                        <button type="button" ng-click="listCategory()" class="btn btn-primary"> 搜索</button>
+                    </div>
+                </div>
+                <div class="panel panel-primary">
+                    <div class="panel-heading"> 数据展示</div>
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>名称</th>
+                            <th>标记</th>
+                            <th>创建人</th>
+                            <th>创建日期</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="category in categorys">
+                            <td>
+                                <a href="#!/category/{{category._id}}/view" title="{{category.email}}">{{category.name}}</a>
+                            </td>
+                            <td>
+                                {{category.flag}}
+                            </td>
+                            <td>
+                                {{category.author ? category.author.name : '无' }}
+                            </td>
+                            <td>
+                                {{category.created}}
+                            </td>
+                            <td>
+                                <a href="#!/category/{{category._id}}/edit" class="btn btn-default btn-xs">编辑</a>
+                                <a ng-click="delCategory(category._id)" ng-if="category.status !== 101" class="btn btn-danger btn-xs J_del">删除</a>
+                            </td>
+                        </tr>
+                        </tbody>
+
+                    </table>
+                </div>
+                <tm-pagination conf="paginationConf"></tm-pagination>
+            </div>
+        </div>
+    </div>
+</section>

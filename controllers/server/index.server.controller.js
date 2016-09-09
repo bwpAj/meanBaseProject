@@ -47,7 +47,7 @@ exports.index = function (req, res) {
             obj.file = result;
             console.log(obj);
             console.log("token==99-====" + res.locals.token);
-            res.render('server/index', {data: obj, token: res.locals.token});
+            res.render('server/index', {data: JSON.stringify(obj), token: res.locals.token});
         });
 
     } else {
